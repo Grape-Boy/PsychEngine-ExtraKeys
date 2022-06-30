@@ -269,14 +269,31 @@ class PlayState extends MusicBeatState
 	// how big to stretch the pixel art assets
 	public static var daPixelZoom:Float = 6;
 	private var singAnimations:Array<Array<String>> = [
+		// Center
 		['singUP'],
+
+		// Left			Right
 		['singLEFT', 'singRIGHT'],
+
+		// Left		  Center	  Right
 		['singLEFT', 'singUP', 'singRIGHT'],
+
+		// Left			Down		Up		  Right
 		['singLEFT', 'singDOWN', 'singUP', 'singRIGHT'],
+
+		// Left			Down	  Center	  Up		Right
 		['singLEFT', 'singDOWN', 'singUP', 'singUP', 'singRIGHT'],
+
+		// Left			Up		  Right		   Left		   Down		   Right
 		['singLEFT', 'singUP', 'singRIGHT', 'singLEFT', 'singDOWN', 'singRIGHT'],
-		['singLEFT', 'singUP', 'singRIGHT', 'singUP', 'singLEFT', 'singDWON', 'singRIGHT'],
+
+		// Left			Up		  Right		   Up		 Left		 Down		 Right
+		['singLEFT', 'singUP', 'singRIGHT', 'singUP', 'singLEFT', 'singDOWN', 'singRIGHT'],
+
+		// Left			Down		Up		  Right		   Left			Down	   Up		 Right
 		['singLEFT', 'singDOWN', 'singUP', 'singRIGHT', 'singLEFT', 'singDOWN', 'singUP', 'singRIGHT'],
+
+		// Left			Down		Up		  Right 	   Up		 Left		 Down		 Up			Right
 		['singLEFT', 'singDOWN', 'singUP', 'singRIGHT', 'singUP', 'singLEFT', 'singDOWN', 'singUP', 'singRIGHT']
 	];
 

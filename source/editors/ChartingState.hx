@@ -65,7 +65,9 @@ class ChartingState extends MusicBeatState
 		'Hey!',
 		'Hurt Note',
 		'GF Sing',
-		'No Animation'
+		'No Animation',
+		'Kill Note',
+		'Dodge Note'
 	];
 	private var noteTypeIntMap:Map<Int, String> = new Map<Int, String>();
 	private var noteTypeMap:Map<String, Null<Int>> = new Map<String, Null<Int>>();
@@ -1881,7 +1883,7 @@ class ChartingState extends MusicBeatState
 					for (i in 0...controlArray.length)
 					{
 						if(controlArray[i])
-							doANoteThing(conductorTime, i%tMania, style);
+							doANoteThing(conductorTime, i/*%tMania*/, style);
 					}
 				}
 
@@ -1923,9 +1925,9 @@ class ChartingState extends MusicBeatState
 					var datime = (feces - secStart) - (dastrum - secStart); //idk math find out why it doesn't work on any other section other than 0
 					if (curSelectedNote != null)
 					{
-						var controlArray:Array<Bool> = [FlxG.keys.justPressed.ONE, FlxG.keys.justPressed.TWO, FlxG.keys.justPressed.THREE, FlxG.keys.justPressed.FOUR,
-														FlxG.keys.justPressed.FIVE, FlxG.keys.justPressed.SIX, FlxG.keys.justPressed.SEVEN, FlxG.keys.justPressed.EIGHT,
-														FlxG.keys.justPressed.NINE];
+						var controlArray:Array<Bool> = [FlxG.keys.pressed.ONE, FlxG.keys.pressed.TWO, FlxG.keys.pressed.THREE, FlxG.keys.pressed.FOUR,
+														FlxG.keys.pressed.FIVE, FlxG.keys.pressed.SIX, FlxG.keys.pressed.SEVEN, FlxG.keys.pressed.EIGHT,
+														FlxG.keys.pressed.NINE];
 
 						if(controlArray.contains(true))
 						{
@@ -2101,6 +2103,7 @@ class ChartingState extends MusicBeatState
 	function reloadGridLayer() {
 		gridLayer.clear();
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * (1 + tMania * 2), Std.int(GRID_SIZE * getSectionBeats() * 4 * zoomList[curZoom]));
+		trace("Just a green man. (" + gridBG.x + ")");
 
 		#if desktop
 		if(FlxG.save.data.chart_waveformInst || FlxG.save.data.chart_waveformVoices) {
@@ -2129,10 +2132,10 @@ class ChartingState extends MusicBeatState
 			gridLayer.add(gridBlack);
 		}
 
-		var gridBlackLine:FlxSprite = new FlxSprite(gridBG.x + gridBG.width - (GRID_SIZE * 4)).makeGraphic(2, leHeight, FlxColor.BLACK);
+		var gridBlackLine:FlxSprite = new FlxSprite(gridBG.x + gridBG.width - (GRID_SIZE * tMania)).makeGraphic(2, leHeight, FlxColor.BLACK);
 		gridLayer.add(gridBlackLine);
 
-		for (i in 1...(1 + tMania * 2)) {
+		for (i in 1...tMania) {
 			var beatsep1:FlxSprite = new FlxSprite(gridBG.x, (GRID_SIZE * (4 * curZoom)) * i).makeGraphic(Std.int(gridBG.width), 1, 0x44FF0000);
 			if(vortex)
 			{
@@ -2619,7 +2622,7 @@ class ChartingState extends MusicBeatState
 				daText.sprTracker = note;
 			}
 			note.mustPress = _song.notes[curSec].mustHitSection;
-			if(i[1] > 3) note.mustPress = !note.mustPress;
+			if(i[1] > mania) note.mustPress = !note.mustPress;
 		}
 
 		// CURRENT EVENTS
@@ -2800,7 +2803,7 @@ class ChartingState extends MusicBeatState
 	function deleteNote(note:Note):Void
 	{
 		var noteDataToCheck:Int = note.noteData;
-		if(noteDataToCheck > -1 && note.mustPress != _song.notes[curSec].mustHitSection) noteDataToCheck += 4;
+		if(noteDataToCheck > -1 && note.mustPress != _song.notes[curSec].mustHitSection) noteDataToCheck += tMania;
 
 		if(note.noteData > -1) //Normal Notes
 		{

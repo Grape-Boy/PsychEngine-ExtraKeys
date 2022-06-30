@@ -153,6 +153,26 @@ class Note extends FlxSprite
 					noMissAnimation = true;
 				case 'GF Sing':
 					gfNote = true;
+				case 'Kill Note':
+					animation.play('deathNote');
+
+					ignoreNote = mustPress;
+
+					colorSwap.hue = 0;
+					colorSwap.saturation = 0;
+					colorSwap.brightness = 0;
+
+					lowPriority = true;
+					missHealth = Math.POSITIVE_INFINITY;
+					hitCausesMiss = true;
+				case 'Dodge Note':
+					animation.play('dodgeNote');
+
+					colorSwap.hue = 0;
+					colorSwap.saturation = 0;
+					colorSwap.brightness = 0;
+
+					missHealth = Math.POSITIVE_INFINITY;
 			}
 			noteType = value;
 		}
@@ -185,23 +205,23 @@ class Note extends FlxSprite
 
 		var arrowColors:Array<Array<String>> = [ // yeah that's more efficient I think
 
-			[ "white" ],
+			[ "white" ], // 1K
 
-			[ "purple", "red" ],
+			[ "purple", "red" ], // 2K
 
-			[ "purple", "white", "red" ],
+			[ "purple", "white", "red" ], // 3K
 
-			[ "purple", "blue", "green", "red" ],
+			[ "purple", "blue", "green", "red" ], // 4K
 
-			[ "purple", "blue", "white", "green", "red" ],
+			[ "purple", "blue", "white", "green", "red" ], // 5K
 
-			[ "purple", "green", "red", "yellow", "blue", "dark" ],
+			[ "purple", "green", "red", "yellow", "blue", "dark" ], // 6K
 
-			[ "purple", "green", "red", "white", "yellow", "blue", "dark" ],
+			[ "purple", "green", "red", "white", "yellow", "blue", "dark" ], // 7K
 
-			[ "purple", "blue", "green", "red", "yellow", "violet", "black", "dark" ],
+			[ "purple", "blue", "green", "red", "yellow", "violet", "black", "dark" ], // 8K
 
-			[ "purple", "blue", "green", "red", "white", "yellow", "violet", "black", "dark" ]
+			[ "purple", "blue", "green", "red", "white", "yellow", "violet", "black", "dark" ] // 9K
 
 		];
 
@@ -246,7 +266,7 @@ class Note extends FlxSprite
 			offsetX += width / 2;
 			copyAngle = false;
 
-			animation.play(Std.string(arrowColors[mania][noteData] + 'holdend'));
+			animation.play(Std.string(arrowColors[mania][noteData % tMania] + 'holdend'));
 			/*
 			switch (noteData)
 			{
@@ -269,7 +289,7 @@ class Note extends FlxSprite
 
 			if (prevNote.isSustainNote)
 			{
-				prevNote.animation.play(Std.string(arrowColors[mania][prevNote.noteData] + 'hold'));
+				prevNote.animation.play(Std.string(arrowColors[mania][prevNote.noteData % tMania] + 'hold'));
 				/*
 				switch (prevNote.noteData)
 				{
@@ -393,6 +413,9 @@ class Note extends FlxSprite
 		animation.addByPrefix('violetScroll', 'violet0');
 		animation.addByPrefix('blackScroll', 'black0');
 		animation.addByPrefix('darkScroll', 'dark0');
+
+		animation.addByPrefix('deathNote', 'kill0');
+		animation.addByPrefix('dodgeNote', 'live0');
 
 		if (isSustainNote)
 		{
