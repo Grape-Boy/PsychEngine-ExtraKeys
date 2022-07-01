@@ -201,6 +201,8 @@ class ChartingState extends MusicBeatState
 		192
 	];
 
+	var lessGridX:Array<Int> = [3, 2, 1, 0, -1, -2, -3, -4, -5];
+
 	var text:String = "";
 	public static var vortex:Bool = false;
 	public var mouseQuant:Bool = false;
@@ -303,7 +305,7 @@ class ChartingState extends MusicBeatState
 		Conductor.changeBPM(_song.bpm);
 		Conductor.mapBPMChanges(_song);
 
-		bpmTxt = new FlxText(1000, 50, 0, "", 16);
+		bpmTxt = new FlxText(1110, 50, 0, "", 16);
 		bpmTxt.scrollFactor.set();
 		add(bpmTxt);
 
@@ -349,7 +351,7 @@ class ChartingState extends MusicBeatState
 		UI_box = new FlxUITabMenu(null, tabs, true);
 
 		UI_box.resize(300, 400);
-		UI_box.x = 640 + GRID_SIZE / 2;
+		UI_box.x = 775 + GRID_SIZE / 2;
 		UI_box.y = 25;
 		UI_box.scrollFactor.set();
 
@@ -1584,7 +1586,8 @@ class ChartingState extends MusicBeatState
 			&& FlxG.mouse.y < gridBG.y + (GRID_SIZE * getSectionBeats() * 4) * zoomList[curZoom])
 		{
 			dummyArrow.visible = true;
-			dummyArrow.x = Math.floor(FlxG.mouse.x / GRID_SIZE) * GRID_SIZE;
+			dummyArrow.x = Math.floor(FlxG.mouse.x / GRID_SIZE) * GRID_SIZE; //Math.floor(FlxG.mouse.x / GRID_SIZE) * GRID_SIZE;
+			trace(gridBG.x);
 			if (FlxG.keys.pressed.SHIFT)
 				dummyArrow.y = FlxG.mouse.y;
 			else
@@ -2103,7 +2106,13 @@ class ChartingState extends MusicBeatState
 	function reloadGridLayer() {
 		gridLayer.clear();
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * (1 + tMania * 2), Std.int(GRID_SIZE * getSectionBeats() * 4 * zoomList[curZoom]));
+
 		trace("Just a green man. (" + gridBG.x + ")");
+
+		gridBG.x = 150;
+		gridBG.x += GRID_SIZE * lessGridX[mania] * 2;
+
+		trace("Just another green man. (" + gridBG.x + ")");
 
 		#if desktop
 		if(FlxG.save.data.chart_waveformInst || FlxG.save.data.chart_waveformVoices) {
@@ -2116,10 +2125,12 @@ class ChartingState extends MusicBeatState
 		if(sectionStartTime(1) <= FlxG.sound.music.length)
 		{
 			nextGridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * (1 + tMania * 2), Std.int(GRID_SIZE * getSectionBeats(curSec + 1) * 4 * zoomList[curZoom]));
+			nextGridBG.x = gridBG.x;
 			leHeight = Std.int(gridBG.height + nextGridBG.height);
 			foundNextSec = true;
 		}
 		else nextGridBG = new FlxSprite().makeGraphic(1, 1, FlxColor.TRANSPARENT);
+		nextGridBG.x = gridBG.x;
 		nextGridBG.y = gridBG.height;
 		
 		gridLayer.add(nextGridBG);
@@ -2394,7 +2405,7 @@ class ChartingState extends MusicBeatState
 
 		strumLineNotes = new FlxTypedGroup<StrumNote>();
 		for (i in 0...(tMania*2)){
-			var note:StrumNote = new StrumNote(GRID_SIZE * (i+1), strumLine.y, i % tMania, 0, mania);
+			var note:StrumNote = new StrumNote(gridBG.x + GRID_SIZE * (i+1), strumLine.y, i % tMania, 0, mania);
 			note.setGraphicSize(GRID_SIZE, GRID_SIZE);
 			note.updateHitbox();
 			note.playAnim('static', true);
