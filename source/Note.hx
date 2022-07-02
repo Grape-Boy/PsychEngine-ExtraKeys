@@ -421,7 +421,7 @@ class Note extends FlxSprite
 		{
 			// Hold Ends
 
-			animation.addByPrefix('purpleholdend', 'purple end hold');
+			animation.addByPrefix('purpleholdend', 'purple hold end'); // i forgot that i changed it to 'purple hold end', so 'purple end hold' made the game crash
 			animation.addByPrefix('blueholdend', 'blue hold end');
 			animation.addByPrefix('greenholdend', 'green hold end');
 			animation.addByPrefix('redholdend', 'red hold end');
