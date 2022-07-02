@@ -78,10 +78,10 @@ class EditorPlayState extends MusicBeatState
 		bg.color = FlxColor.fromHSB(FlxG.random.int(0, 359), FlxG.random.float(0, 0.8), FlxG.random.float(0.3, 1));
 		add(bg);
 
-		if (mania > 8 || mania < 0)
+		if (mania < Note.minMania || mania > Note.maxMania)
 		{
-			mania = 3;
-			tMania = 4;
+			mania = Note.defaultMania;
+			tMania = mania + 1;
 		} else {
 			tMania = mania + 1;
 		}

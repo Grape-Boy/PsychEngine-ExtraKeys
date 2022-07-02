@@ -345,10 +345,10 @@ class PlayState extends MusicBeatState
 		debugKeysCharacter = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_2'));
 		PauseSubState.songName = null; //Reset to default
 
-		if (mania > 8 || mania < 0) // Checks for a valid mania value
+		if (mania < Note.minMania || mania > Note.maxMania) // Checks for a valid mania value
 		{
-			mania = 3;
-			tMania = 4;
+			mania = Note.defaultMania;
+			tMania = mania + 1;
 		} else {
 			tMania = mania + 1;
 		}

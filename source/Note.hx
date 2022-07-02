@@ -21,6 +21,10 @@ class Note extends FlxSprite
 {
 	public var extraData:Map<String,Dynamic> = [];
 
+	public static var minMania:Int = 0;
+	public static var maxMania:Int = 8;
+	public static var defaultMania:Int = 3;
+
 	public var strumTime:Float = 0;
 	public var mustPress:Bool = false;
 	public var noteData:Int = 0;
