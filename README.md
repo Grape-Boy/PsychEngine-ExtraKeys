@@ -1,3 +1,38 @@
+# Friday Night Funkin' - Psych Engine: Extra Keys
+This mod of Psych Engine adds extra keys.
+
+## Installation:
+Follow the instructions further down the page.
+
+## Credits:
+* Grape Boy - Programmer
+* tposejank - Original Extra Keys Programmer, Note Splashes ~~and snippets of code that I stole~~
+* **SrPerez** - Note Assets and First Mod to have extra keys added **(VS Shaggy)**
+
+### Special Thanks
+* Bacon69000 - Forked tposejank's Extra Keys before its deletion
+
+# Features
+
+## 9K Note Customization
+![](https://github.com/Grape-Boy/PsychEngine-ExtraKeys/blob/main/docs/img/note-colors.png?raw=true)
+
+## Change Mania Event
+This event allows you to change the song's mania at any moment while playing.
+
+## ~~Extra-Keys Chart Editor~~
+The Chart Editor's grid is partially obscured when changing the mania to higher than 4K, this will be fixed soon
+
+## 5 Bonus Additions
+### Event
+* Close Game Event: This event is capable of closing the game after the given amount of time
+### Note Types
+* Kill Note: This note instantly kills the player when hit (from Shaggy x Matt)
+* Dodge Note: This note instantly kills the player when missed (from Shaggy x Matt)
+### Note Properties
+* `noCombo`: If a note with this property set to true gets hit, it won't add to the combo
+* `noStrumAnim`: If a note with this property set to true gets hit, the strum won't glow (untested)
+
 # Friday Night Funkin' - Psych Engine
 Engine originally used on [Mind Games Mod](https://gamebanana.com/mods/301107), intended to be a fix for the vanilla version's many issues while keeping the casual play aspect of it. Also aiming to be an easier alternative to newbie coders.
 
