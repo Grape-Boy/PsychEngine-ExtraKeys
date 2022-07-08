@@ -122,7 +122,8 @@ class ChartingState extends MusicBeatState
 	var highlight:FlxSprite;
 
 	public static var GRID_SIZE:Int = 40;
-	var CAM_OFFSET:Int = 360;
+	//											   1   2    3    4    5    6    7    8    9
+	public static var CAM_OFFSETS:Array<Float> = [-40, 40, 120, 200, 280, 360, 440, 520, 600]; // surprised this works
 
 	var dummyArrow:FlxSprite;
 
@@ -234,7 +235,7 @@ class ChartingState extends MusicBeatState
 
 		if (_song.mania < Note.minMania || _song.mania > Note.maxMania)
 			_song.mania = Note.defaultMania;
-
+		
 		mania = _song.mania;
 		tMania = mania + 1;
 
@@ -300,7 +301,7 @@ class ChartingState extends MusicBeatState
 		Conductor.changeBPM(_song.bpm);
 		Conductor.mapBPMChanges(_song);
 
-		bpmTxt = new FlxText(1000, 50, 0, "", 16);
+		bpmTxt = new FlxText(1110, 50, 0, "", 16);
 		bpmTxt.scrollFactor.set();
 		add(bpmTxt);
 
@@ -330,7 +331,7 @@ class ChartingState extends MusicBeatState
 		reloadStrums(false);
 
 		camPos = new FlxObject(0, 0, 1, 1);
-		camPos.setPosition(strumLine.x + CAM_OFFSET, strumLine.y);
+		camPos.setPosition(strumLine.x + CAM_OFFSETS[mania], strumLine.y);
 
 		dummyArrow = new FlxSprite().makeGraphic(GRID_SIZE, GRID_SIZE);
 		add(dummyArrow);
@@ -346,7 +347,7 @@ class ChartingState extends MusicBeatState
 		UI_box = new FlxUITabMenu(null, tabs, true);
 
 		UI_box.resize(300, 400);
-		UI_box.x = 640 + GRID_SIZE / 2;
+		UI_box.x = 785 + GRID_SIZE / 2;
 		UI_box.y = 25;
 		UI_box.scrollFactor.set();
 
@@ -1455,6 +1456,9 @@ class ChartingState extends MusicBeatState
 
 				mania = _song.mania;
 				tMania = mania + 1;
+
+				camPos.x = CAM_OFFSETS[mania];
+				strumLine.makeGraphic(Std.int(GRID_SIZE * (1 + 2*tMania) ), 4);
 				
 				reloadGridLayer();
 				reloadStrums(true);
@@ -2380,12 +2384,16 @@ class ChartingState extends MusicBeatState
 	function reloadStrums(kill:Bool)
 	{
 		if (kill)
+		{
 			if (strumLineNotes.length > 0)
 				strumLineNotes.forEach(function(note:StrumNote)
 					{
 						if (note != null)
-							note.kill();
+							note.destroy();
 					});
+			
+			strumLineNotes.clear();
+		}
 
 		strumLineNotes = new FlxTypedGroup<StrumNote>();
 		for (i in 0...tMania*2){

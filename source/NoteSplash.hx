@@ -25,8 +25,8 @@ class NoteSplash extends FlxSprite
 		antialiasing = ClientPrefs.globalAntialiasing;
 	}
 
-	public function setupNoteSplash(x:Float, y:Float, note:Int = 0, texture:String = null, hueColor:Float = 0, satColor:Float = 0, brtColor:Float = 0) {
-		setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
+	public function setupNoteSplash(x:Float, y:Float, note:Int = 0, texture:String = null, hueColor:Float = 0, satColor:Float = 0, brtColor:Float = 0, mania:Int = 3) {
+		setPosition(x - Note.swagWidth[mania] * 0.95, y - Note.swagWidth[mania]);
 		alpha = 0.6;
 
 		if(texture == null) {
@@ -43,17 +43,24 @@ class NoteSplash extends FlxSprite
 		offset.set(10, 10);
 
 		var animNum:Int = FlxG.random.int(1, 2);
-		animation.play('note' + note + '-' + animNum, true);
+		animation.play('note' + Note.splashNums[mania][note] + '-' + animNum, true);
 		if(animation.curAnim != null)animation.curAnim.frameRate = 24 + FlxG.random.int(-2, 2);
 	}
 
 	function loadAnims(skin:String) {
 		frames = Paths.getSparrowAtlas(skin);
 		for (i in 1...3) {
+			animation.addByPrefix("note0-" + i, "note splash purple " + i, 24, false);
 			animation.addByPrefix("note1-" + i, "note splash blue " + i, 24, false);
 			animation.addByPrefix("note2-" + i, "note splash green " + i, 24, false);
-			animation.addByPrefix("note0-" + i, "note splash purple " + i, 24, false);
 			animation.addByPrefix("note3-" + i, "note splash red " + i, 24, false);
+
+			animation.addByPrefix("note4-" + i, "note splash white " + i, 24, false);
+			
+			animation.addByPrefix("note5-" + i, "note splash yellow " + i, 24, false);
+			animation.addByPrefix("note6-" + i, "note splash violet " + i, 24, false);
+			animation.addByPrefix("note7-" + i, "note splash black " + i, 24, false);
+			animation.addByPrefix("note8-" + i, "note splash dark " + i, 24, false);
 		}
 	}
 

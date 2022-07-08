@@ -2495,7 +2495,7 @@ class PlayState extends MusicBeatState
 						else if(ClientPrefs.middleScroll)
 						{
 							sustainNote.x += 310;
-							if(daNoteData > Std.int(mania/2 - 1)) //Up and Right
+							if(daNoteData > Std.int(mania/2)) //Up and Right
 							{
 								sustainNote.x += FlxG.width / 2 + 25;
 							}
@@ -2666,6 +2666,8 @@ class PlayState extends MusicBeatState
 			}
 
 			var babyArrow:StrumNote = new StrumNote(ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X, strumLine.y, i, player, mania);
+			//babyArrow.setGraphicSize(Std.int(babyArrow.width * Note.noteScales[mania]));
+			//babyArrow.updateHitbox();
 			babyArrow.downScroll = ClientPrefs.downScroll;
 			if (!isStoryMode && !skipArrowStartTween)
 			{
@@ -2687,7 +2689,7 @@ class PlayState extends MusicBeatState
 				if(ClientPrefs.middleScroll)
 				{
 					babyArrow.x += 310;
-					if(i > 1) { //Up and Right
+					if(i > (Std.int(mania / 2)) ) { //Up and Right
 						babyArrow.x += FlxG.width / 2 + 25;
 					}
 				}
@@ -2712,7 +2714,7 @@ class PlayState extends MusicBeatState
 				oldStrum.alpha = playerStrums.members[i].alpha;
 				oldStrum.scrollFactor.set();
 				oldStrum.cameras = [camHUD];
-				//oldStrum.setGraphicSize(Std.int(oldStrum.width * Note.scales[mania]));
+				oldStrum.setGraphicSize(Std.int(oldStrum.width * Note.noteScales[mania]));
 				oldStrum.updateHitbox();
 				add(oldStrum);
 				
@@ -2728,7 +2730,7 @@ class PlayState extends MusicBeatState
 				oldStrum.alpha = opponentStrums.members[i].alpha;
 				oldStrum.scrollFactor.set();
 				oldStrum.cameras = [camHUD];
-				//oldStrum.setGraphicSize(Std.int(oldStrum.width * Note.scales[mania]));
+				oldStrum.setGraphicSize(Std.int(oldStrum.width * Note.noteScales[mania]));
 				oldStrum.updateHitbox();
 				add(oldStrum);
 				
@@ -3245,7 +3247,7 @@ class PlayState extends MusicBeatState
 								daNote.y -= 19;
 							}
 						}
-						daNote.y += (Note.swagWidth / 2) - (60.5 * (songSpeed - 1));
+						daNote.y += (Note.swagWidth[mania] / 2) - (60.5 * (songSpeed - 1));
 						daNote.y += 27.5 * ((SONG.bpm / 100) - 1) * (songSpeed - 1);
 					}
 				}
@@ -3265,7 +3267,7 @@ class PlayState extends MusicBeatState
 					}
 				}
 
-				var center:Float = strumY + Note.swagWidth / 2;
+				var center:Float = strumY + Note.swagWidth[mania] / 2;
 				if(strumGroup.members[daNote.noteData].sustainReduce && daNote.isSustainNote && (daNote.mustPress || !daNote.ignoreNote) &&
 					(!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
 				{
@@ -5025,7 +5027,7 @@ class PlayState extends MusicBeatState
 		}
 
 		var splash:NoteSplash = grpNoteSplashes.recycle(NoteSplash);
-		splash.setupNoteSplash(x, y, data, skin, hue, sat, brt);
+		splash.setupNoteSplash(x, y, data, skin, hue, sat, brt, mania);
 		grpNoteSplashes.add(splash);
 	}
 

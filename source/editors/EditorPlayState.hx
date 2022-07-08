@@ -473,7 +473,7 @@ class EditorPlayState extends MusicBeatState
 
 				strumX += daNote.offsetX;
 				strumY += daNote.offsetY;
-				var center:Float = strumY + Note.swagWidth / 2;
+				var center:Float = strumY + Note.swagWidth[mania] / 2;
 
 				if(daNote.copyAlpha) {
 					daNote.alpha = strumAlpha * daNote.multAlpha;
@@ -495,7 +495,7 @@ class EditorPlayState extends MusicBeatState
 									daNote.y -= 19;
 								}
 							} 
-							daNote.y += (Note.swagWidth / 2) - (60.5 * (PlayState.SONG.speed - 1));
+							daNote.y += (Note.swagWidth[mania] / 2) - (60.5 * (PlayState.SONG.speed - 1));
 							daNote.y += 27.5 * ((PlayState.SONG.bpm / 100) - 1) * (PlayState.SONG.speed - 1);
 
 							if(daNote.mustPress || !daNote.ignoreNote)

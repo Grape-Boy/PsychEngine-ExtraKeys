@@ -24,6 +24,66 @@ class Note extends FlxSprite
 	public static var minMania:Int = 0;
 	public static var maxMania:Int = 8;
 	public static var defaultMania:Int = 3;
+	//											  1     2    3     4     5    6     7    8     9
+	public static var noteScales:Array<Float> = [0.85, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5, 0.45]; // yeah
+
+	public static var arrowColors:Array<Array<String>> = [ // yeah that's more efficient I think
+
+		[ "white" ], // 1K
+
+		[ "purple", "red" ], // 2K
+
+		[ "purple", "white", "red" ], // 3K
+
+		[ "purple", "blue", "green", "red" ], // 4K
+
+		[ "purple", "blue", "white", "green", "red" ], // 5K
+
+		[ "purple", "green", "red", "yellow", "blue", "dark" ], // 6K
+
+		[ "purple", "green", "red", "white", "yellow", "blue", "dark" ], // 7K
+
+		[ "purple", "blue", "green", "red", "yellow", "violet", "black", "dark" ], // 8K
+
+		[ "purple", "blue", "green", "red", "white", "yellow", "violet", "black", "dark" ] // 9K
+
+	];
+
+	/*
+	purple = 0
+	down = 1
+	up = 2
+	right = 3
+
+	white = 4
+
+	yellow = 5
+	violet = 6
+	black = 7
+	dark = 8
+	*/
+
+	public static var splashNums:Array<Array<Int>> = [
+
+		[4], // 1K
+
+		[0, 3], // 2K
+
+		[0, 4, 3], // 3K
+
+		[0, 1, 2, 3], // 4K
+
+		[0, 1, 4, 2, 3], // 5K
+
+		[0, 2, 3, 5, 1, 8], // 6K
+
+		[0, 2, 3, 4, 5, 1, 8], // 7K
+
+		[0, 1, 2, 3, 5, 6, 7, 8], // 8K
+
+		[0, 1, 2, 3, 4, 5, 6, 7, 8] // 9K
+
+	];
 
 	public var strumTime:Float = 0;
 	public var mustPress:Bool = false;
@@ -62,11 +122,29 @@ class Note extends FlxSprite
 	public var lateHitMult:Float = 1;
 	public var lowPriority:Bool = false;
 
-	public static var swagWidth:Float = 160 * 0.7;
+	public static var swagWidth:Array<Int> = [
+		Std.int(160 * 0.85), 	// 1
+		Std.int(160 * 0.8), 	// 2
+		Std.int(160 * 0.75), 	// 3
+		Std.int(160 * 0.7), 	// 4
+		Std.int(160 * 0.65), 	// 5
+		Std.int(160 * 0.6), 	// 6
+		Std.int(160 * 0.55), 	// 7
+		Std.int(160 * 0.5), 	// 8
+		Std.int(160 * 0.45) 	// 9
+	]; // "why weird factors?" because the notes are too far apart if I don't
+
 	public static var PURP_NOTE:Int = 0;
-	public static var GREEN_NOTE:Int = 2;
 	public static var BLUE_NOTE:Int = 1;
+	public static var GREEN_NOTE:Int = 2;
 	public static var RED_NOTE:Int = 3;
+
+	public static var WHITE_NOTE:Int = 4;
+
+	public static var YELLOW_NOTE:Int = 5;
+	public static var VIOLET_NOTE:Int = 6;
+	public static var BLACK_NOTE:Int = 7;
+	public static var DARK_NOTE:Int = 8;
 
 	// Lua shit
 	public var noteSplashDisabled:Bool = false;
@@ -129,9 +207,12 @@ class Note extends FlxSprite
 
 	private function set_noteType(value:String):String {
 		noteSplashTexture = PlayState.SONG.splashSkin;
-		colorSwap.hue = ClientPrefs.arrowHSV[noteData % tMania][0] / 360;
-		colorSwap.saturation = ClientPrefs.arrowHSV[noteData % tMania][1] / 100;
-		colorSwap.brightness = ClientPrefs.arrowHSV[noteData % tMania][2] / 100;
+
+		var hsvNumThing:Int = Note.splashNums[mania][noteData % tMania];
+
+		colorSwap.hue = ClientPrefs.arrowHSV[hsvNumThing][0] / 360;
+		colorSwap.saturation = ClientPrefs.arrowHSV[hsvNumThing][1] / 100;
+		colorSwap.brightness = ClientPrefs.arrowHSV[hsvNumThing][2] / 100;
 
 		if(noteData > -1 && noteType != value) {
 			switch(value) {
@@ -207,34 +288,13 @@ class Note extends FlxSprite
 		this.mania = mania;
 		this.tMania = mania+1;
 
-		var arrowColors:Array<Array<String>> = [ // yeah that's more efficient I think
-
-			[ "white" ], // 1K
-
-			[ "purple", "red" ], // 2K
-
-			[ "purple", "white", "red" ], // 3K
-
-			[ "purple", "blue", "green", "red" ], // 4K
-
-			[ "purple", "blue", "white", "green", "red" ], // 5K
-
-			[ "purple", "green", "red", "yellow", "blue", "dark" ], // 6K
-
-			[ "purple", "green", "red", "white", "yellow", "blue", "dark" ], // 7K
-
-			[ "purple", "blue", "green", "red", "yellow", "violet", "black", "dark" ], // 8K
-
-			[ "purple", "blue", "green", "red", "white", "yellow", "violet", "black", "dark" ] // 9K
-
-		];
-
 		if(noteData > -1) {
 			texture = '';
 			colorSwap = new ColorSwap();
 			shader = colorSwap.shader;
 
-			x += swagWidth * (noteData % tMania);
+			x += swagWidth[mania] * (noteData % tMania);
+			
 			if(!isSustainNote) { //Doing this 'if' check to fix the warnings on Senpai songs
 				var animToPlay:String = '';
 				animToPlay = arrowColors[mania][noteData % tMania];
@@ -360,13 +420,13 @@ class Note extends FlxSprite
 		if(PlayState.isPixelStage) {
 			if(isSustainNote) {
 				loadGraphic(Paths.image('pixelUI/' + blahblah + 'ENDS'));
-				width = width / 4;
+				width = width / 9;
 				height = height / 2;
 				originalHeightForCalcs = height;
 				loadGraphic(Paths.image('pixelUI/' + blahblah + 'ENDS'), true, Math.floor(width), Math.floor(height));
 			} else {
 				loadGraphic(Paths.image('pixelUI/' + blahblah));
-				width = width / 4;
+				width = width / 9;
 				height = height / 5;
 				loadGraphic(Paths.image('pixelUI/' + blahblah), true, Math.floor(width), Math.floor(height));
 			}
@@ -452,26 +512,51 @@ class Note extends FlxSprite
 			animation.addByPrefix('darkhold', 'dark hold piece');
 		}
 
-		setGraphicSize(Std.int(width * 0.7));
+		setGraphicSize(Std.int(width * Note.noteScales[mania]));
 		updateHitbox();
 	}
 
 	function loadPixelNoteAnims() {
 		if(isSustainNote) {
-			animation.add('purpleholdend', [PURP_NOTE + 4]);
-			animation.add('greenholdend', [GREEN_NOTE + 4]);
-			animation.add('redholdend', [RED_NOTE + 4]);
-			animation.add('blueholdend', [BLUE_NOTE + 4]);
+			// Hold Ends
+
+			animation.add('purpleholdend', [PURP_NOTE + 9]);
+			animation.add('blueholdend', [BLUE_NOTE + 9]);
+			animation.add('greenholdend', [GREEN_NOTE + 9]);
+			animation.add('redholdend', [RED_NOTE + 9]);
+
+			animation.add('whiteholdend', [WHITE_NOTE + 9]);
+			
+			animation.add('yellowholdend', [YELLOW_NOTE + 9]);
+			animation.add('violetholdend', [VIOLET_NOTE + 9]);
+			animation.add('blackholdend', [BLACK_NOTE + 9]);
+			animation.add('darkholdend', [DARK_NOTE + 9]);
+
+			// Hold Pieces
 
 			animation.add('purplehold', [PURP_NOTE]);
+			animation.add('bluehold', [BLUE_NOTE]);
 			animation.add('greenhold', [GREEN_NOTE]);
 			animation.add('redhold', [RED_NOTE]);
-			animation.add('bluehold', [BLUE_NOTE]);
+
+			animation.add('whitehold', [WHITE_NOTE]);
+			
+			animation.add('yellowhold', [YELLOW_NOTE]);
+			animation.add('violethold', [VIOLET_NOTE]);
+			animation.add('blackhold', [BLACK_NOTE]);
+			animation.add('darkhold', [DARK_NOTE]);
 		} else {
-			animation.add('greenScroll', [GREEN_NOTE + 4]);
-			animation.add('redScroll', [RED_NOTE + 4]);
-			animation.add('blueScroll', [BLUE_NOTE + 4]);
-			animation.add('purpleScroll', [PURP_NOTE + 4]);
+			animation.add('purpleScroll', [PURP_NOTE + 9]);
+			animation.add('blueScroll', [BLUE_NOTE + 9]);
+			animation.add('greenScroll', [GREEN_NOTE + 9]);
+			animation.add('redScroll', [RED_NOTE + 9]);
+
+			animation.add('whiteScroll', [WHITE_NOTE + 9]);
+			
+			animation.add('yellowScroll', [YELLOW_NOTE + 9]);
+			animation.add('violetScroll', [VIOLET_NOTE + 9]);
+			animation.add('blackScroll', [BLACK_NOTE + 9]);
+			animation.add('darkScroll', [DARK_NOTE + 9]);
 		}
 	}
 

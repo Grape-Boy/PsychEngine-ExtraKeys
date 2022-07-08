@@ -17,11 +17,11 @@ class StrumNote extends FlxSprite
 	public var downScroll:Bool = false;//plan on doing scroll directions soon -bb
 	public var sustainReduce:Bool = true;
 
-	public var aL:String = "arrowLEFT";
-	public var aD:String = "arrowDOWN";
-	public var aS:String = "arrowSPACE";
-	public var aU:String = "arrowUP";
-	public var aR:String = "arrowRIGHT";
+	public static var aL:String = "arrowLEFT";
+	public static var aD:String = "arrowDOWN";
+	public static var aS:String = "arrowSPACE";
+	public static var aU:String = "arrowUP";
+	public static var aR:String = "arrowRIGHT";
 	
 	private var player:Int;
 	
@@ -51,10 +51,18 @@ class StrumNote extends FlxSprite
 		scrollFactor.set();
 	}
 
-	private function addAnim(arrowName:String, animName:String) {
+	private function addAnim(arrowName:String, animName:String, ?looped:Bool = false) {
 		animation.addByPrefix('static', arrowName);
-		animation.addByPrefix('pressed', animName + ' press', 24, false);
-		animation.addByPrefix('confirm', animName + ' confirm', 24, false);
+		animation.addByPrefix('pressed', animName + ' press', 24, looped);
+		animation.addByPrefix('confirm', animName + ' confirm', 24, looped);
+	}
+
+	private function addAnimPIXEL(noteData:Int) {
+		var numForAnim:Int = Note.splashNums[mania][noteData % tMania];
+
+		animation.add('static', [numForAnim]);
+		animation.add('pressed', [9 + numForAnim, 18 + numForAnim], 12, false);
+		animation.add('confirm', [27 + numForAnim, 36 + numForAnim], 24, false);
 	}
 
 	public function reloadNote()
@@ -65,17 +73,29 @@ class StrumNote extends FlxSprite
 		if(PlayState.isPixelStage)
 		{
 			loadGraphic(Paths.image('pixelUI/' + texture));
-			width = width / 4;
+			width = width / 9;
 			height = height / 5;
 			loadGraphic(Paths.image('pixelUI/' + texture), true, Math.floor(width), Math.floor(height));
 
 			antialiasing = false;
 			setGraphicSize(Std.int(width * PlayState.daPixelZoom));
 
-			animation.add('green', [6]);
-			animation.add('red', [7]);
-			animation.add('blue', [5]);
-			animation.add('purple', [4]);
+			animation.add('purple', [9]);
+			animation.add('blue', [10]);
+			animation.add('green', [11]);
+			animation.add('red', [12]);
+
+			animation.add('white', [13]);
+
+			animation.add('yellow', [14]);
+			animation.add('violet', [15]);
+			animation.add('black', [16]);
+			animation.add('dark', [17]);
+
+			addAnimPIXEL(Std.int( Math.abs(noteData) % tMania ));
+			//setGraphicSize(Std.int(width * Note.noteScales[mania]));
+			updateHitbox();
+			/*
 			switch (Math.abs(noteData))
 			{
 				case 0:
@@ -94,7 +114,7 @@ class StrumNote extends FlxSprite
 					animation.add('static', [3]);
 					animation.add('pressed', [7, 11], 12, false);
 					animation.add('confirm', [15, 19], 24, false);
-			}
+			}*/
 		}
 		else
 		{
@@ -112,7 +132,8 @@ class StrumNote extends FlxSprite
 			animation.addByPrefix('dark', 'arrowRIGHT');
 
 			antialiasing = ClientPrefs.globalAntialiasing;
-			setGraphicSize(Std.int(width * 0.7));
+			setGraphicSize(Std.int(width * Note.noteScales[mania]));
+			updateHitbox();
 			/*
 			switch (Math.abs(noteData))
 			{
@@ -170,7 +191,7 @@ class StrumNote extends FlxSprite
 
 	public function postAddedToGroup() {
 		playAnim('static');
-		x += Note.swagWidth * noteData;
+		x += Note.swagWidth[mania] * noteData;
 		x += 50;
 		x += ((FlxG.width / 2) * player);
 		ID = noteData;
@@ -202,9 +223,11 @@ class StrumNote extends FlxSprite
 			colorSwap.saturation = 0;
 			colorSwap.brightness = 0;
 		} else {
-			colorSwap.hue = ClientPrefs.arrowHSV[noteData % tMania][0] / 360;
-			colorSwap.saturation = ClientPrefs.arrowHSV[noteData % tMania][1] / 100;
-			colorSwap.brightness = ClientPrefs.arrowHSV[noteData % tMania][2] / 100;
+			var hsvNumThing:Int = Note.splashNums[mania][noteData % tMania];
+
+			colorSwap.hue = ClientPrefs.arrowHSV[hsvNumThing][0] / 360;
+			colorSwap.saturation = ClientPrefs.arrowHSV[hsvNumThing][1] / 100;
+			colorSwap.brightness = ClientPrefs.arrowHSV[hsvNumThing][2] / 100;
 
 			if(animation.curAnim.name == 'confirm' && !PlayState.isPixelStage) {
 				centerOrigin();
