@@ -3257,12 +3257,12 @@ class PlayState extends MusicBeatState
 					opponentNoteHit(daNote);
 				}
 
-				if(daNote.mustPress && cpuControlled) {
+				if(!daNote.blockHit && daNote.mustPress && cpuControlled && daNote.canBeHit) {
 					if(daNote.isSustainNote) {
 						if(daNote.canBeHit) {
 							goodNoteHit(daNote);
 						}
-					} else if(daNote.strumTime <= Conductor.songPosition || (daNote.isSustainNote && daNote.canBeHit && daNote.mustPress)) {
+					} else if(daNote.strumTime <= Conductor.songPosition || daNote.isSustainNote) {
 						goodNoteHit(daNote);
 					}
 				}
@@ -4314,7 +4314,7 @@ class PlayState extends MusicBeatState
 				var sortedNotesList:Array<Note> = [];
 				notes.forEachAlive(function(daNote:Note)
 				{
-					if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit && !daNote.isSustainNote)
+					if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit && !daNote.isSustainNote && !daNote.blockHit)
 					{
 						if(daNote.noteData == key)
 						{
@@ -4630,7 +4630,7 @@ class PlayState extends MusicBeatState
 			{
 				// hold note functions
 				if (daNote.isSustainNote && controlHoldArray[daNote.noteData] && daNote.canBeHit
-				&& daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit) {
+				&& daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit && !daNote.blockHit) {
 					goodNoteHit(daNote);
 				}
 			});
@@ -4978,13 +4978,11 @@ class PlayState extends MusicBeatState
 				if (!note.noStrumAnim)
 					StrumPlayAnim(false, Std.int(Math.abs(note.noteData)) % tMania, time);
 			} else {
-				playerStrums.forEach(function(spr:StrumNote)
+				var spr = playerStrums.members[note.noteData];
+				if(spr != null)
 				{
-					if (Math.abs(note.noteData) == spr.ID)
-					{
-						spr.playAnim('confirm', true);
-					}
-				});
+					spr.playAnim('confirm', true);
+				}
 			}
 			note.wasGoodHit = true;
 			vocals.volume = 1;
@@ -5016,14 +5014,22 @@ class PlayState extends MusicBeatState
 		var skin:String = 'noteSplashes';
 		if(PlayState.SONG.splashSkin != null && PlayState.SONG.splashSkin.length > 0) skin = PlayState.SONG.splashSkin;
 
-		var hue:Float = ClientPrefs.arrowHSV[data % tMania][0] / 360;
-		var sat:Float = ClientPrefs.arrowHSV[data % tMania][1] / 100;
-		var brt:Float = ClientPrefs.arrowHSV[data % tMania][2] / 100;
-		if(note != null) {
-			skin = note.noteSplashTexture;
-			hue = note.noteSplashHue;
-			sat = note.noteSplashSat;
-			brt = note.noteSplashBrt;
+		var hue:Float = 0;
+		var sat:Float = 0;
+		var brt:Float = 0;
+		if (data > -1 && data < ClientPrefs.arrowHSV.length)
+		{
+			var poopPiss:Int = Note.splashNums[mania][data % tMania];
+
+			hue = ClientPrefs.arrowHSV[poopPiss][0] / 360;
+			sat = ClientPrefs.arrowHSV[poopPiss][1] / 100;
+			brt = ClientPrefs.arrowHSV[poopPiss][2] / 100;
+			if(note != null) {
+				skin = note.noteSplashTexture;
+				hue = note.noteSplashHue;
+				sat = note.noteSplashSat;
+				brt = note.noteSplashBrt;
+			}
 		}
 
 		var splash:NoteSplash = grpNoteSplashes.recycle(NoteSplash);

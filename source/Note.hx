@@ -103,6 +103,7 @@ class Note extends FlxSprite
 
 	public var tail:Array<Note> = []; // for sustains
 	public var parent:Note;
+	public var blockHit:Bool = false; // only works for player
 
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
@@ -207,12 +208,14 @@ class Note extends FlxSprite
 
 	private function set_noteType(value:String):String {
 		noteSplashTexture = PlayState.SONG.splashSkin;
+		if (noteData > -1 && noteData < ClientPrefs.arrowHSV.length)
+		{
+			var hsvNumThing:Int = Note.splashNums[mania][noteData % tMania];
 
-		var hsvNumThing:Int = Note.splashNums[mania][noteData % tMania];
-
-		colorSwap.hue = ClientPrefs.arrowHSV[hsvNumThing][0] / 360;
-		colorSwap.saturation = ClientPrefs.arrowHSV[hsvNumThing][1] / 100;
-		colorSwap.brightness = ClientPrefs.arrowHSV[hsvNumThing][2] / 100;
+			colorSwap.hue = ClientPrefs.arrowHSV[hsvNumThing][0] / 360;
+			colorSwap.saturation = ClientPrefs.arrowHSV[hsvNumThing][1] / 100;
+			colorSwap.brightness = ClientPrefs.arrowHSV[hsvNumThing][2] / 100;
+		}
 
 		if(noteData > -1 && noteType != value) {
 			switch(value) {
@@ -295,7 +298,7 @@ class Note extends FlxSprite
 
 			x += swagWidth[mania] * (noteData % tMania);
 			
-			if(!isSustainNote) { //Doing this 'if' check to fix the warnings on Senpai songs
+			if(!isSustainNote && noteData > -1 && noteData < 4) { //Doing this 'if' check to fix the warnings on Senpai songs
 				var animToPlay:String = '';
 				animToPlay = arrowColors[mania][noteData % tMania];
 				/*

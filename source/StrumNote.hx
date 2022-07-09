@@ -223,11 +223,14 @@ class StrumNote extends FlxSprite
 			colorSwap.saturation = 0;
 			colorSwap.brightness = 0;
 		} else {
-			var hsvNumThing:Int = Note.splashNums[mania][noteData % tMania];
+			if (noteData > -1 && noteData < ClientPrefs.arrowHSV.length)
+			{
+				var hsvNumThing:Int = Note.splashNums[mania][noteData % tMania];
 
-			colorSwap.hue = ClientPrefs.arrowHSV[hsvNumThing][0] / 360;
-			colorSwap.saturation = ClientPrefs.arrowHSV[hsvNumThing][1] / 100;
-			colorSwap.brightness = ClientPrefs.arrowHSV[hsvNumThing][2] / 100;
+				colorSwap.hue = ClientPrefs.arrowHSV[hsvNumThing][0] / 360;
+				colorSwap.saturation = ClientPrefs.arrowHSV[hsvNumThing][1] / 100;
+				colorSwap.brightness = ClientPrefs.arrowHSV[hsvNumThing][2] / 100;
+			}
 
 			if(animation.curAnim.name == 'confirm' && !PlayState.isPixelStage) {
 				centerOrigin();
