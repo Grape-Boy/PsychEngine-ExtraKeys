@@ -24,8 +24,8 @@ class Note extends FlxSprite
 	public static var minMania:Int = 0;
 	public static var maxMania:Int = 8;
 	public static var defaultMania:Int = 3;
-	//											  1     2    3     4     5    6     7    8     9
-	public static var noteScales:Array<Float> = [0.85, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5, 0.45]; // yeah
+	//											   1      2     3     4     5    6     7    8     9
+	public static var noteScales:Array<Float> = [0.775, 0.75, 0.725, 0.7, 0.65, 0.6, 0.55, 0.5, 0.45]; // yeah
 
 	public static var arrowColors:Array<Array<String>> = [ // yeah that's more efficient I think
 
@@ -123,15 +123,15 @@ class Note extends FlxSprite
 	public var lowPriority:Bool = false;
 
 	public static var swagWidth:Array<Int> = [
-		Std.int(160 * 0.85), 	// 1
-		Std.int(160 * 0.8), 	// 2
-		Std.int(160 * 0.75), 	// 3
+		Std.int(160 * 0.775), 	// 1
+		Std.int(160 * 0.75), 	// 2
+		Std.int(160 * 0.725), 	// 3
 		Std.int(160 * 0.7), 	// 4
 		Std.int(160 * 0.65), 	// 5
-		Std.int(160 * 0.6), 	// 6
-		Std.int(160 * 0.55), 	// 7
-		Std.int(160 * 0.5), 	// 8
-		Std.int(160 * 0.45) 	// 9
+		Std.int(160 * 0.58), 	// 6
+		Std.int(160 * 0.53), 	// 7
+		Std.int(160 * 0.48), 	// 8
+		Std.int(160 * 0.43) 	// 9
 	]; // "why weird factors?" because the notes are too far apart if I don't
 
 	public static var PURP_NOTE:Int = 0;
@@ -278,7 +278,7 @@ class Note extends FlxSprite
 		isSustainNote = sustainNote;
 		this.inEditor = inEditor;
 
-		x += (ClientPrefs.middleScroll ? PlayState.STRUM_X_MIDDLESCROLL : PlayState.STRUM_X) + 50;
+		x += (ClientPrefs.middleScroll ? PlayState.STRUM_X_MIDDLESCROLL[mania] : PlayState.STRUM_X) + 50;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y -= 2000;
 		this.strumTime = strumTime;
