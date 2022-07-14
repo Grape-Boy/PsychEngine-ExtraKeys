@@ -233,7 +233,7 @@ class ChartingState extends MusicBeatState
 			PlayState.SONG = _song;
 		}
 
-		if (_song.mania < Note.minMania || _song.mania > Note.maxMania)
+		if (_song.mania == null || _song.mania < Note.minMania || _song.mania > Note.maxMania)
 			_song.mania = Note.defaultMania;
 		
 		mania = _song.mania;
@@ -2110,6 +2110,9 @@ class ChartingState extends MusicBeatState
 		}
 		#end
 
+		leftIcon.setPosition( (GRID_SIZE + 10) + (GRID_SIZE*mania)/2 , -100); // fuck math
+		rightIcon.setPosition(GRID_SIZE * 5.2, -100);
+
 		var leHeight:Int = Std.int(gridBG.height);
 		var foundNextSec:Bool = false;
 		if(sectionStartTime(1) <= FlxG.sound.music.length)
@@ -2389,7 +2392,10 @@ class ChartingState extends MusicBeatState
 				strumLineNotes.forEach(function(note:StrumNote)
 					{
 						if (note != null)
+						{
+							strumLineNotes.remove(note, true);
 							note.destroy();
+						}
 					});
 			
 			strumLineNotes.clear();

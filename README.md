@@ -5,8 +5,8 @@ This mod of Psych Engine adds extra keys.
 Follow the instructions further down the page.
 
 ## Credits:
-* Grape Boy - Programmer
-* tposejank - Original Extra Keys Programmer, Note Splashes ~~and snippets of code that I stole~~
+* Grape Boy - Programmer, new Extra Keys Pixel Notes
+* tposejank - Original Extra Keys Programmer, Note Splashes, Pixel Notes ~~and snippets of code that I stole~~
 * **SrPerez** - Note Assets and First Mod to have extra keys added **(VS Shaggy)**
 
 ### Special Thanks
@@ -18,20 +18,22 @@ Follow the instructions further down the page.
 ![](https://github.com/Grape-Boy/PsychEngine-ExtraKeys/blob/main/docs/img/note-colors.png?raw=true)
 
 ## Change Mania Event
-This event allows you to change the song's mania at any moment while playing.
+This event changes the song's mania at any moment while playing.
 
-## ~~Extra-Keys Chart Editor~~
-The Chart Editor's grid is partially obscured when changing the mania to higher than 4K, this will be fixed soon
+## Extra-Keys Chart Editor
+The Chart Editor allows you to chart songs from 1K to 9K.
 
-## 5 Bonus Additions
+## Multiple Bonus Additions
 ### Event
 * Close Game Event: This event is capable of closing the game after the given amount of time
 ### Note Types
 * Kill Note: This note instantly kills the player when hit (from Shaggy x Matt)
 * Dodge Note: This note instantly kills the player when missed (from Shaggy x Matt)
 ### Note Properties
+* `noAddScore`: Notes with this property set to true won't add to the total score [UNTESTED]
+* `noCountNote`: The note won't be counted in the total amount of notes hit if set to true [UNTESTED]
 * `noCombo`: If a note with this property set to true gets hit, it won't add to the combo
-* `noStrumAnim`: If a note with this property set to true gets hit, the strum won't glow (untested)
+* `noStrumAnim`: If a note with this property set to true gets hit, the strum won't glow
 
 # Friday Night Funkin' - Psych Engine
 Engine originally used on [Mind Games Mod](https://gamebanana.com/mods/301107), intended to be a fix for the vanilla version's many issues while keeping the casual play aspect of it. Also aiming to be an easier alternative to newbie coders.

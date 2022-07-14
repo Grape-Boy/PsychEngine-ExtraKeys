@@ -125,7 +125,7 @@ class Note extends FlxSprite
 
 	public static var swagWidth:Array<Int> = [
 		Std.int(160 * 0.775), 	// 1
-		Std.int(160 * 0.75), 	// 2
+		Std.int(160 * 0.73), 	// 2
 		Std.int(160 * 0.725), 	// 3
 		Std.int(160 * 0.7), 	// 4
 		Std.int(160 * 0.65), 	// 5
@@ -173,8 +173,10 @@ class Note extends FlxSprite
 
 	public var texture(default, set):String = null;
 
-	public var noCombo:Bool = false;
-	public var noStrumAnim:Bool = false;
+	public var noAddScore:Bool = false; // note doesn't add score
+	public var noCountNote:Bool = false; // note isn't counted in total notes hit
+	public var noCombo:Bool = false; // doesn't add to combo
+	public var noStrumAnim:Bool = false; // no strum glow
 	public var noAnimation:Bool = false;
 	public var noMissAnimation:Bool = false;
 	public var hitCausesMiss:Bool = false;
@@ -298,7 +300,7 @@ class Note extends FlxSprite
 
 			x += swagWidth[mania] * (noteData % tMania);
 			
-			if(!isSustainNote && noteData > -1 && noteData < 4) { //Doing this 'if' check to fix the warnings on Senpai songs
+			if(!isSustainNote && noteData > -1 && noteData < tMania) { //Doing this 'if' check to fix the warnings on Senpai songs
 				var animToPlay:String = '';
 				animToPlay = arrowColors[mania][noteData % tMania];
 				/*

@@ -72,7 +72,7 @@ using StringTools;
 class PlayState extends MusicBeatState
 {
 	public static var STRUM_X = 42;
-	public static var STRUM_X_MIDDLESCROLL:Array<Float> = [-84, -164, -200, -278, -312, -326, -336, -352, -364];
+	public static var STRUM_X_MIDDLESCROLL:Array<Float> = [-116, -168, -222, -278, -306, -326, -345, -354, -358]; // a number that's not even!! :scream:
 
 	public static var ratingStuff:Array<Dynamic> = [
 		['You Suck!', 0.2], //From 0% to 19%
@@ -331,6 +331,8 @@ class PlayState extends MusicBeatState
 	private var possibleKeys:Array<Array<Bool>>;
 	private var possibleKeysP:Array<Array<Bool>>;
 	private var possibleKeysR:Array<Array<Bool>>;
+
+	private var bullHorseDog:FlxSprite;
 
 	var precacheList:Map<String, String> = new Map<String, String>();
 
@@ -913,6 +915,9 @@ class PlayState extends MusicBeatState
 				if(!ClientPrefs.lowQuality) foregroundSprites.add(new BGSprite('tank3', 1300, 1200, 3.5, 2.5, ['fg']));
 		}
 
+		bullHorseDog = new FlxSprite(FlxG.width/2-1, 0).makeGraphic(2, FlxG.height, FlxColor.RED);
+		add(bullHorseDog);
+
 		switch(Paths.formatToSongPath(SONG.song))
 		{
 			case 'stress':
@@ -1310,6 +1315,7 @@ class PlayState extends MusicBeatState
 		timeBarBG.cameras = [camHUD];
 		timeTxt.cameras = [camHUD];
 		doof.cameras = [camHUD];
+		bullHorseDog.cameras = [camHUD];
 
 		// if (SONG.song == 'South')
 		// FlxG.camera.alpha = 0.7;
@@ -4136,7 +4142,8 @@ class PlayState extends MusicBeatState
 		//tryna do MS based judgment due to popular demand
 		var daRating:Rating = Conductor.judgeNote(note, noteDiff);
 
-		totalNotesHit += daRating.ratingMod;
+		if (!note.noCountNote)
+			totalNotesHit += daRating.ratingMod;
 		note.ratingMod = daRating.ratingMod;
 		if(!note.ratingDisabled) daRating.increase();
 		note.rating = daRating.name;
@@ -4148,7 +4155,8 @@ class PlayState extends MusicBeatState
 		}
 
 		if(!practiceMode && !cpuControlled) {
-			songScore += score;
+			if (!note.noAddScore)
+				songScore += score;
 			if(!note.ratingDisabled)
 			{
 				songHits++;
@@ -4786,7 +4794,7 @@ class PlayState extends MusicBeatState
 
 		if(char != null && !daNote.noMissAnimation && char.hasMissAnimations)
 		{
-			var animToPlay:String = singAnimations[mania][Std.int(Math.abs(daNote.noteData))] + 'miss' + daNote.animSuffix;
+			var animToPlay:String = singAnimations[mania][Std.int(Math.abs(daNote.noteData) % tMania)] + 'miss' + daNote.animSuffix;
 			char.playAnim(animToPlay, true);
 		}
 
@@ -4832,7 +4840,7 @@ class PlayState extends MusicBeatState
 			});*/
 
 			if(boyfriend.hasMissAnimations) {
-				boyfriend.playAnim(singAnimations[mania][Std.int(Math.abs(direction))] + 'miss', true);
+				boyfriend.playAnim(singAnimations[mania][Std.int(Math.abs(direction) % tMania)] + 'miss', true);
 			}
 			vocals.volume = 0;
 		}
@@ -4859,7 +4867,7 @@ class PlayState extends MusicBeatState
 			}
 
 			var char:Character = dad;
-			var animToPlay:String = singAnimations[mania][Std.int(Math.abs(note.noteData))] + altAnim;
+			var animToPlay:String = singAnimations[mania][Std.int(Math.abs(note.noteData) % tMania)] + altAnim;
 			if(note.gfNote) {
 				char = gf;
 			}
@@ -4879,7 +4887,7 @@ class PlayState extends MusicBeatState
 			time += 0.15;
 		}
 		if (!note.noStrumAnim)
-			StrumPlayAnim(true, Std.int(Math.abs(note.noteData)) % tMania, time);
+			StrumPlayAnim(true, Std.int(Math.abs(note.noteData) % tMania), time);
 		note.hitByOpponent = true;
 
 		callOnLuas('opponentNoteHit', [notes.members.indexOf(note), Math.abs(note.noteData), note.noteType, note.isSustainNote]);
@@ -4939,7 +4947,7 @@ class PlayState extends MusicBeatState
 			health += note.hitHealth * healthGain;
 
 			if(!note.noAnimation) {
-				var animToPlay:String = singAnimations[mania][Std.int(Math.abs(note.noteData))];
+				var animToPlay:String = singAnimations[mania][Std.int(Math.abs(note.noteData) % tMania)];
 
 				if(note.gfNote)
 				{
@@ -4976,8 +4984,8 @@ class PlayState extends MusicBeatState
 					time += 0.15;
 				}
 				if (!note.noStrumAnim)
-					StrumPlayAnim(false, Std.int(Math.abs(note.noteData)) % tMania, time);
-			} else {
+					StrumPlayAnim(false, Std.int(Math.abs(note.noteData) % tMania), time);
+			} else if (!note.noStrumAnim) {
 				var spr = playerStrums.members[note.noteData];
 				if(spr != null)
 				{
