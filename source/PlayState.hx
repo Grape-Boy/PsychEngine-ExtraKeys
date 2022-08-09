@@ -59,8 +59,15 @@ import StageData;
 import FunkinLua;
 import DialogueBoxPsych;
 import Conductor.Rating;
+
+#if !flash 
+import flixel.addons.display.FlxRuntimeShader;
+import openfl.filters.ShaderFilter;
+#end
+
 #if sys
 import sys.FileSystem;
+import sys.io.File;
 #end
 
 #if VIDEOS_ALLOWED
@@ -328,10 +335,8 @@ class PlayState extends MusicBeatState
 
 	// Less laggy controls
 	private var keysArray:Array<Array<Dynamic>>;
-	private var possibleKeys:Array<Array<Bool>>;
-	private var possibleKeysP:Array<Array<Bool>>;
-	private var possibleKeysR:Array<Array<Bool>>;
-
+	private var controlArray:Array<String>;
+	
 	private var bullHorseDog:FlxSprite;
 
 	var precacheList:Map<String, String> = new Map<String, String>();
@@ -433,6 +438,13 @@ class PlayState extends MusicBeatState
 			],
 		];
 
+		controlArray = [
+			'NOTE_LEFT',
+			'NOTE_DOWN',
+			'NOTE_UP',
+			'NOTE_RIGHT'
+		];
+
 		//Ratings
 		ratingsData.push(new Rating('sick')); //default rating
 
@@ -478,13 +490,12 @@ class PlayState extends MusicBeatState
 		camOther.bgColor.alpha = 0;
 
 		FlxG.cameras.reset(camGame);
-		FlxG.cameras.add(camHUD);
-		FlxG.cameras.add(camOther);
+		FlxG.cameras.add(camHUD, false);
+		FlxG.cameras.add(camOther, false);
 		grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
 
-		FlxCamera.defaultCameras = [camGame];
+		FlxG.cameras.setDefaultDrawTarget(camGame, true);
 		CustomFadeTransition.nextCamera = camOther;
-		//FlxG.cameras.setDefaultDrawTarget(camGame, true);
 
 		persistentUpdate = true;
 		persistentDraw = true;
@@ -1480,6 +1491,78 @@ class PlayState extends MusicBeatState
 		CustomFadeTransition.nextCamera = camOther;
 	}
 
+	#if (!flash && sys)
+	public var runtimeShaders:Map<String, Array<String>> = new Map<String, Array<String>>();
+	public function createRuntimeShader(name:String):FlxRuntimeShader
+	{
+		if(!ClientPrefs.shaders) return new FlxRuntimeShader();
+
+		#if (!flash && MODS_ALLOWED && sys)
+		if(!runtimeShaders.exists(name) && !initLuaShader(name))
+		{
+			FlxG.log.warn('Shader $name is missing!');
+			return new FlxRuntimeShader();
+		}
+
+		var arr:Array<String> = runtimeShaders.get(name);
+		return new FlxRuntimeShader(arr[0], arr[1]);
+		#else
+		FlxG.log.warn("Platform unsupported for Runtime Shaders!");
+		return null;
+		#end
+	}
+
+	public function initLuaShader(name:String, ?glslVersion:Int = 120)
+	{
+		if(!ClientPrefs.shaders) return false;
+
+		if(runtimeShaders.exists(name))
+		{
+			FlxG.log.warn('Shader $name was already initialized!');
+			return true;
+		}
+
+		var foldersToCheck:Array<String> = [Paths.mods('shaders/')];
+		if(Paths.currentModDirectory != null && Paths.currentModDirectory.length > 0)
+			foldersToCheck.insert(0, Paths.mods(Paths.currentModDirectory + '/shaders/'));
+
+		for(mod in Paths.getGlobalMods())
+			foldersToCheck.insert(0, Paths.mods(mod + '/shaders/'));
+		
+		for (folder in foldersToCheck)
+		{
+			if(FileSystem.exists(folder))
+			{
+				var frag:String = folder + name + '.frag';
+				var vert:String = folder + name + '.vert';
+				var found:Bool = false;
+				if(FileSystem.exists(frag))
+				{
+					frag = File.getContent(frag);
+					found = true;
+				}
+				else frag = null;
+
+				if (FileSystem.exists(vert))
+				{
+					vert = File.getContent(vert);
+					found = true;
+				}
+				else vert = null;
+
+				if(found)
+				{
+					runtimeShaders.set(name, [frag, vert]);
+					//trace('Found shader $name!');
+					return true;
+				}
+			}
+		}
+		FlxG.log.warn('Missing shader $name .frag AND .vert files!');
+		return false;
+	}
+	#end
+
 	function set_songSpeed(value:Float):Float
 	{
 		if(generatedMusic)
@@ -2305,7 +2388,7 @@ class PlayState extends MusicBeatState
 		scoreTxt.text = 'Score: ' + songScore
 		+ ' | Misses: ' + songMisses
 		+ ' | Rating: ' + ratingName
-		+ (ratingName != '?' ? ' [${Highscore.floorDecimal(ratingPercent * 100, 2)}% | $ratingFC]' : '');
+		+ (ratingName != '?' ? ' (${Highscore.floorDecimal(ratingPercent * 100, 2)}%) - $ratingFC' : '');
 
 		if(ClientPrefs.scoreZoom && !miss && !cpuControlled)
 		{
@@ -2363,7 +2446,7 @@ class PlayState extends MusicBeatState
 		lastReportedPlayheadPosition = 0;
 
 		FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false);
-		FlxG.sound.music.onComplete = onSongComplete;
+		FlxG.sound.music.onComplete = finishSong.bind();
 		vocals.play();
 
 		if(startOnTime > 0)
@@ -3931,11 +4014,6 @@ class PlayState extends MusicBeatState
 		camFollowPos.setPosition(x, y);
 	}
 
-	//Any way to do this without using a different function? kinda dumb
-	private function onSongComplete()
-	{
-		finishSong(false);
-	}
 	public function finishSong(?ignoreNoteOffset:Bool = false):Void
 	{
 		var finishCallback:Void->Void = endSong; //In case you want to change it in a specific song.
@@ -4342,6 +4420,7 @@ class PlayState extends MusicBeatState
 		});
 	}
 
+	public var strumsBlocked:Array<Bool> = [];
 	private function onKeyPress(event:KeyboardEvent):Void
 	{
 		var eventKey:FlxKey = event.keyCode;
@@ -4366,7 +4445,7 @@ class PlayState extends MusicBeatState
 				var sortedNotesList:Array<Note> = [];
 				notes.forEachAlive(function(daNote:Note)
 				{
-					if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit && !daNote.isSustainNote && !daNote.blockHit)
+					if (strumsBlocked[daNote.noteData] != true && daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit && !daNote.isSustainNote && !daNote.blockHit)
 					{
 						if(daNote.noteData == key)
 						{
@@ -4417,7 +4496,7 @@ class PlayState extends MusicBeatState
 			}
 
 			var spr:StrumNote = playerStrums.members[key];
-			if(spr != null && spr.animation.curAnim.name != 'confirm')
+			if(strumsBlocked[key] != true && spr != null && spr.animation.curAnim.name != 'confirm')
 			{
 				spr.playAnim('pressed');
 				spr.resetAnim = 0;
@@ -4476,199 +4555,17 @@ class PlayState extends MusicBeatState
 	private function keyShit():Void
 	{
 		// HOLDING
-		/*
-		var up = controls.NOTE_UP;
-		var right = controls.NOTE_RIGHT;
-		var down = controls.NOTE_DOWN;
-		var left = controls.NOTE_LEFT;
-		*/
-
-		possibleKeys = [
-			[ // 1K (0)
-				controls.NOTE_ONE
-			],
-
-			[ // 2K (1)
-				controls.NOTE_TWO1,
-				controls.NOTE_TWO2
-			],
-
-			[ // 3K (2)
-				controls.NOTE_THREE1,
-				controls.NOTE_THREE2,
-				controls.NOTE_THREE3
-			],
-
-			[ // 4K (3)
-				controls.NOTE_LEFT,
-				controls.NOTE_DOWN,
-				controls.NOTE_UP,
-				controls.NOTE_RIGHT
-			],
-
-			[ // 5K (4)
-				controls.NOTE_FIVE1,
-				controls.NOTE_FIVE2,
-				controls.NOTE_FIVE3,
-				controls.NOTE_FIVE4,
-				controls.NOTE_FIVE5
-			],
-
-			[ // 6K (5)
-				controls.NOTE_SIX1,
-				controls.NOTE_SIX2,
-				controls.NOTE_SIX3,
-				controls.NOTE_SIX4,
-				controls.NOTE_SIX5,
-				controls.NOTE_SIX6
-			],
-
-			[ // 7K (6)
-				controls.NOTE_SEVEN1,
-				controls.NOTE_SEVEN2,
-				controls.NOTE_SEVEN3,
-				controls.NOTE_SEVEN4,
-				controls.NOTE_SEVEN5,
-				controls.NOTE_SEVEN6,
-				controls.NOTE_SEVEN7
-			],
-
-			[ // 8K (7)
-				controls.NOTE_EIGHT1,
-				controls.NOTE_EIGHT2,
-				controls.NOTE_EIGHT3,
-				controls.NOTE_EIGHT4,
-				controls.NOTE_EIGHT5,
-				controls.NOTE_EIGHT6,
-				controls.NOTE_EIGHT7,
-				controls.NOTE_EIGHT8
-			],
-
-			[ // 9K (8)
-				controls.NOTE_NINE1,
-				controls.NOTE_NINE2,
-				controls.NOTE_NINE3,
-				controls.NOTE_NINE4,
-				controls.NOTE_NINE5,
-				controls.NOTE_NINE6,
-				controls.NOTE_NINE7,
-				controls.NOTE_NINE8,
-				controls.NOTE_NINE9
-			]
-		];
-		var controlHoldArray:Array<Bool> = [/*left, down, up, right*/];
-
-		// Add control bools to controlHoldArray
-		for (i in 0...keysArray[mania].length)
-		{
-			controlHoldArray.push(possibleKeys[mania][i]);
-		}
-
-		// Clean out the possibleKeys array to avoid making it too big, which could create lag
-		for (i in (possibleKeys.length-1)...-1)
-		{
-			while (possibleKeys[i].length > 0)
-				possibleKeys[i].pop();
-
-			possibleKeys.pop();
-		}
+		var parsedHoldArray:Array<Bool> = parseKeys();
 
 		// TO DO: Find a better way to handle controller inputs, this should work for now
 		if(ClientPrefs.controllerMode)
 		{
-			possibleKeysP = [
-				[ // 1K (0)
-					controls.NOTE_ONE_P
-				],
-
-				[ // 2K (1)
-					controls.NOTE_TWO1_P,
-					controls.NOTE_TWO2_P
-				],
-
-				[ // 3K (2)
-					controls.NOTE_THREE1_P,
-					controls.NOTE_THREE2_P,
-					controls.NOTE_THREE3_P
-				],
-
-				[ // 4K (3)
-					controls.NOTE_LEFT_P,
-					controls.NOTE_DOWN_P,
-					controls.NOTE_UP_P,
-					controls.NOTE_RIGHT_P
-				],
-
-				[ // 5K (4)
-					controls.NOTE_FIVE1_P,
-					controls.NOTE_FIVE2_P,
-					controls.NOTE_FIVE3_P,
-					controls.NOTE_FIVE4_P,
-					controls.NOTE_FIVE5_P
-				],
-
-				[ // 6K (5)
-					controls.NOTE_SIX1_P,
-					controls.NOTE_SIX2_P,
-					controls.NOTE_SIX3_P,
-					controls.NOTE_SIX4_P,
-					controls.NOTE_SIX5_P,
-					controls.NOTE_SIX6_P
-				],
-
-				[ // 7K (6)
-					controls.NOTE_SEVEN1_P,
-					controls.NOTE_SEVEN2_P,
-					controls.NOTE_SEVEN3_P,
-					controls.NOTE_SEVEN4_P,
-					controls.NOTE_SEVEN5_P,
-					controls.NOTE_SEVEN6_P,
-					controls.NOTE_SEVEN7_P
-				],
-
-				[ // 8K (7)
-					controls.NOTE_EIGHT1_P,
-					controls.NOTE_EIGHT2_P,
-					controls.NOTE_EIGHT3_P,
-					controls.NOTE_EIGHT4_P,
-					controls.NOTE_EIGHT5_P,
-					controls.NOTE_EIGHT6_P,
-					controls.NOTE_EIGHT7_P,
-					controls.NOTE_EIGHT8_P
-				],
-
-				[ // 9K (8)
-					controls.NOTE_NINE1_P,
-					controls.NOTE_NINE2_P,
-					controls.NOTE_NINE3_P,
-					controls.NOTE_NINE4_P,
-					controls.NOTE_NINE5_P,
-					controls.NOTE_NINE6_P,
-					controls.NOTE_NINE7_P,
-					controls.NOTE_NINE8_P,
-					controls.NOTE_NINE9_P
-				]
-			];
-			var controlArray:Array<Bool> = [/*controls.NOTE_LEFT_P, controls.NOTE_DOWN_P, controls.NOTE_UP_P, controls.NOTE_RIGHT_P*/];
-
-			for (i in 0...keysArray[mania].length)
+			var parsedArray:Array<Bool> = parseKeys('_P');
+			if(parsedArray.contains(true))
 			{
-				controlArray.push(possibleKeysP[mania][i]);
-			}
-
-			for (i in (possibleKeysP.length-1)...-1)
-			{
-				while (possibleKeysP[i].length > 0)
-					possibleKeysP[i].pop();
-
-				possibleKeysP.pop();
-			}
-
-			if(controlArray.contains(true))
-			{
-				for (i in 0...controlArray.length)
+				for (i in 0...parsedArray.length)
 				{
-					if(controlArray[i])
+					if(parsedArray[i] && strumsBlocked[i] != true)
 						onKeyPress(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, -1, keysArray[mania][i][0]));
 				}
 			}
@@ -4681,13 +4578,13 @@ class PlayState extends MusicBeatState
 			notes.forEachAlive(function(daNote:Note)
 			{
 				// hold note functions
-				if (daNote.isSustainNote && controlHoldArray[daNote.noteData] && daNote.canBeHit
+				if (strumsBlocked[daNote.noteData] != true && daNote.isSustainNote && parsedHoldArray[daNote.noteData] && daNote.canBeHit
 				&& daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit && !daNote.blockHit) {
 					goodNoteHit(daNote);
 				}
 			});
 
-			if (controlHoldArray.contains(true) && !endingSong) {
+			if (parsedHoldArray.contains(true) && !endingSong) {
 				#if ACHIEVEMENTS_ALLOWED
 				var achieve:String = checkForAchievement(['oversinging']);
 				if (achieve != null) {
@@ -4703,105 +4600,28 @@ class PlayState extends MusicBeatState
 		}
 
 		// TO DO: Find a better way to handle controller inputs, this should work for now
-		if(ClientPrefs.controllerMode)
+		if(ClientPrefs.controllerMode || strumsBlocked.contains(true))
 		{
-			possibleKeysR = [
-				[ // 1K (0)
-					controls.NOTE_ONE_R
-				],
-
-				[ // 2K (1)
-					controls.NOTE_TWO1_R,
-					controls.NOTE_TWO2_R
-				],
-
-				[ // 3K (2)
-					controls.NOTE_THREE1_R,
-					controls.NOTE_THREE2_R,
-					controls.NOTE_THREE3_R
-				],
-
-				[ // 4K (3)
-					controls.NOTE_LEFT_R,
-					controls.NOTE_DOWN_R,
-					controls.NOTE_UP_R,
-					controls.NOTE_RIGHT_R
-				],
-
-				[ // 5K (4)
-					controls.NOTE_FIVE1_R,
-					controls.NOTE_FIVE2_R,
-					controls.NOTE_FIVE3_R,
-					controls.NOTE_FIVE4_R,
-					controls.NOTE_FIVE5_R
-				],
-
-				[ // 6K (5)
-					controls.NOTE_SIX1_R,
-					controls.NOTE_SIX2_R,
-					controls.NOTE_SIX3_R,
-					controls.NOTE_SIX4_R,
-					controls.NOTE_SIX5_R,
-					controls.NOTE_SIX6_R
-				],
-
-				[ // 7K (6)
-					controls.NOTE_SEVEN1_R,
-					controls.NOTE_SEVEN2_R,
-					controls.NOTE_SEVEN3_R,
-					controls.NOTE_SEVEN4_R,
-					controls.NOTE_SEVEN5_R,
-					controls.NOTE_SEVEN6_R,
-					controls.NOTE_SEVEN7_R
-				],
-
-				[ // 8K (7)
-					controls.NOTE_EIGHT1_R,
-					controls.NOTE_EIGHT2_R,
-					controls.NOTE_EIGHT3_R,
-					controls.NOTE_EIGHT4_R,
-					controls.NOTE_EIGHT5_R,
-					controls.NOTE_EIGHT6_R,
-					controls.NOTE_EIGHT7_R,
-					controls.NOTE_EIGHT8_R
-				],
-
-				[ // 9K (8)
-					controls.NOTE_NINE1_R,
-					controls.NOTE_NINE2_R,
-					controls.NOTE_NINE3_R,
-					controls.NOTE_NINE4_R,
-					controls.NOTE_NINE5_R,
-					controls.NOTE_NINE6_R,
-					controls.NOTE_NINE7_R,
-					controls.NOTE_NINE8_R,
-					controls.NOTE_NINE9_R
-				]
-			];
-			var controlArray:Array<Bool> = [/*controls.NOTE_LEFT_R, controls.NOTE_DOWN_R, controls.NOTE_UP_R, controls.NOTE_RIGHT_R*/];
-
-			for (i in 0...keysArray[mania].length)
+			var parsedArray:Array<Bool> = parseKeys('_R');
+			if(parsedArray.contains(true))
 			{
-				controlArray.push(possibleKeysR[mania][i]);
-			}
-
-			for (i in (possibleKeysR.length-1)...-1)
-			{
-				while (possibleKeysR[i].length > 0)
-					possibleKeysR[i].pop();
-
-				possibleKeysR.pop();
-			}
-
-			if(controlArray.contains(true))
-			{
-				for (i in 0...controlArray.length)
+				for (i in 0...parsedArray.length)
 				{
-					if(controlArray[i])
+					if(parsedArray[i] || strumsBlocked[i] == true)
 						onKeyRelease(new KeyboardEvent(KeyboardEvent.KEY_UP, true, true, -1, keysArray[mania][i][0]));
 				}
 			}
 		}
+	}
+
+	private function parseKeys(?suffix:String = ''):Array<Bool>
+	{
+		var ret:Array<Bool> = [];
+		for (i in 0...controlArray.length)
+		{
+			ret[i] = Reflect.getProperty(controls, controlArray[i] + suffix);
+		}
+		return ret;
 	}
 
 	function noteMiss(daNote:Note):Void { //You didn't hit the key and let it go offscreen, also used by Hurt Notes
@@ -5053,7 +4873,7 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	function spawnNoteSplashOnNote(note:Note) {
+	public function spawnNoteSplashOnNote(note:Note) {
 		if(ClientPrefs.noteSplashes && note != null) {
 			var strum:StrumNote = playerStrums.members[note.noteData];
 			if(strum != null) {
@@ -5452,8 +5272,11 @@ class PlayState extends MusicBeatState
 			if(ret == FunkinLua.Function_StopLua && !ignoreStops)
 				break;
 			
-			if(ret != FunkinLua.Function_Continue)
-				returnVal = ret;
+			// had to do this because there is a bug in haxe where Stop != Continue doesnt work
+			var bool:Bool = ret == FunkinLua.Function_Continue;
+			if(!bool) {
+				returnVal = cast ret;
+			}
 		}
 		#end
 		//trace(event, returnVal);
@@ -5599,7 +5422,7 @@ class PlayState extends MusicBeatState
 							}
 						}
 					case 'toastie':
-						if(/*ClientPrefs.framerate <= 60 &&*/ ClientPrefs.lowQuality && !ClientPrefs.globalAntialiasing && !ClientPrefs.imagesPersist) {
+						if(/*ClientPrefs.framerate <= 60 &&*/ ClientPrefs.lowQuality && !ClientPrefs.globalAntialiasing) {
 							unlock = true;
 						}
 					case 'debugger':
