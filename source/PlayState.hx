@@ -335,7 +335,7 @@ class PlayState extends MusicBeatState
 
 	// Less laggy controls
 	private var keysArray:Array<Array<Dynamic>>;
-	private var controlArray:Array<String>;
+	private var controlArray:Array<Array<String>>;
 	
 	private var bullHorseDog:FlxSprite;
 
@@ -439,10 +439,83 @@ class PlayState extends MusicBeatState
 		];
 
 		controlArray = [
-			'NOTE_LEFT',
-			'NOTE_DOWN',
-			'NOTE_UP',
-			'NOTE_RIGHT'
+			[
+				'NOTE_ONE'
+			],
+
+			[
+				'NOTE_TWO1',
+				'NOTE_TWO2',
+			],
+
+			[
+				'NOTE_THREE1',
+				'NOTE_THREE2',
+				'NOTE_THREE3',
+			],
+
+			[
+				'NOTE_LEFT',
+				'NOTE_DOWN',
+				'NOTE_UP',
+				'NOTE_RIGHT'
+			],
+
+			[
+				'NOTE_FIVE1',
+				'NOTE_FIVE2',
+				'NOTE_FIVE3',
+				'NOTE_FIVE4',
+				'NOTE_FIVE5',
+			],
+
+			[
+				'NOTE_SIX1',
+				'NOTE_SIX2',
+				'NOTE_SIX3',
+
+				'NOTE_SIX4',
+				'NOTE_SIX5',
+				'NOTE_SIX6',
+			],
+
+			[
+				'NOTE_SEVEN1',
+				'NOTE_SEVEN2',
+				'NOTE_SEVEN3',
+
+				'NOTE_SEVEN4',
+
+				'NOTE_SEVEN5',
+				'NOTE_SEVEN6',
+				'NOTE_SEVEN7',
+			],	
+
+			[
+				'NOTE_EIGHT1',
+				'NOTE_EIGHT2',
+				'NOTE_EIGHT3',
+				'NOTE_EIGHT4',
+
+				'NOTE_EIGHT5',
+				'NOTE_EIGHT6',
+				'NOTE_EIGHT7',
+				'NOTE_EIGHT8',
+			],
+
+			[
+				'NOTE_NINE1',
+				'NOTE_NINE2',
+				'NOTE_NINE3',
+				'NOTE_NINE4',
+
+				'NOTE_NINE5',
+
+				'NOTE_NINE6',
+				'NOTE_NINE7',
+				'NOTE_NINE8',
+				'NOTE_NINE9',
+			]
 		];
 
 		//Ratings
@@ -4617,9 +4690,9 @@ class PlayState extends MusicBeatState
 	private function parseKeys(?suffix:String = ''):Array<Bool>
 	{
 		var ret:Array<Bool> = [];
-		for (i in 0...controlArray.length)
+		for (i in 0...controlArray[mania].length)
 		{
-			ret[i] = Reflect.getProperty(controls, controlArray[i] + suffix);
+			ret[i] = Reflect.getProperty(controls, controlArray[mania][i] + suffix);
 		}
 		return ret;
 	}
