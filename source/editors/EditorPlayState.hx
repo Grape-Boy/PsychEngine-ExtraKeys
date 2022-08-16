@@ -60,11 +60,9 @@ class EditorPlayState extends MusicBeatState
 	
 	// Less laggy controls
 	private var keysArray:Array<Array<Dynamic>>;
-	private var possibleKeys:Array<Array<Bool>>;
-	private var possibleKeysP:Array<Array<Bool>>;
-	private var possibleKeysR:Array<Array<Bool>>;
+	private var controlArray:Array<Array<String>>;
 
-	var mania:Int = PlayState.SONG.mania;
+	var mania:Null<Int> = PlayState.SONG.mania;
 	var tMania:Int;
 
 	public static var instance:EditorPlayState;
@@ -78,13 +76,10 @@ class EditorPlayState extends MusicBeatState
 		bg.color = FlxColor.fromHSB(FlxG.random.int(0, 359), FlxG.random.float(0, 0.8), FlxG.random.float(0.3, 1));
 		add(bg);
 
-		if (mania < Note.minMania || mania > Note.maxMania)
-		{
+		if (mania == null || mania < Note.minMania || mania > Note.maxMania) // Checks for a valid mania value
 			mania = Note.defaultMania;
-			tMania = mania + 1;
-		} else {
-			tMania = mania + 1;
-		}
+
+		tMania = mania + 1;
 
 		keysArray = [
 			[ // 1K
@@ -160,6 +155,86 @@ class EditorPlayState extends MusicBeatState
 				ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_nine8')),
 				ClientPrefs.copyKey(ClientPrefs.keyBinds.get('note_nine9')),
 			],
+		];
+
+		controlArray = [
+			[
+				'NOTE_ONE'
+			],
+
+			[
+				'NOTE_TWO1',
+				'NOTE_TWO2',
+			],
+
+			[
+				'NOTE_THREE1',
+				'NOTE_THREE2',
+				'NOTE_THREE3',
+			],
+
+			[
+				'NOTE_LEFT',
+				'NOTE_DOWN',
+				'NOTE_UP',
+				'NOTE_RIGHT'
+			],
+
+			[
+				'NOTE_FIVE1',
+				'NOTE_FIVE2',
+				'NOTE_FIVE3',
+				'NOTE_FIVE4',
+				'NOTE_FIVE5',
+			],
+
+			[
+				'NOTE_SIX1',
+				'NOTE_SIX2',
+				'NOTE_SIX3',
+
+				'NOTE_SIX4',
+				'NOTE_SIX5',
+				'NOTE_SIX6',
+			],
+
+			[
+				'NOTE_SEVEN1',
+				'NOTE_SEVEN2',
+				'NOTE_SEVEN3',
+
+				'NOTE_SEVEN4',
+
+				'NOTE_SEVEN5',
+				'NOTE_SEVEN6',
+				'NOTE_SEVEN7',
+			],	
+
+			[
+				'NOTE_EIGHT1',
+				'NOTE_EIGHT2',
+				'NOTE_EIGHT3',
+				'NOTE_EIGHT4',
+
+				'NOTE_EIGHT5',
+				'NOTE_EIGHT6',
+				'NOTE_EIGHT7',
+				'NOTE_EIGHT8',
+			],
+
+			[
+				'NOTE_NINE1',
+				'NOTE_NINE2',
+				'NOTE_NINE3',
+				'NOTE_NINE4',
+
+				'NOTE_NINE5',
+
+				'NOTE_NINE6',
+				'NOTE_NINE7',
+				'NOTE_NINE8',
+				'NOTE_NINE9',
+			]
 		];
 		
 		strumLine = new FlxSprite(ClientPrefs.middleScroll ? PlayState.STRUM_X_MIDDLESCROLL[mania] : PlayState.STRUM_X, 50).makeGraphic(FlxG.width, 10);
@@ -754,199 +829,17 @@ class EditorPlayState extends MusicBeatState
 	private function keyShit():Void
 	{
 		// HOLDING
-		/*
-		var up = controls.NOTE_UP;
-		var right = controls.NOTE_RIGHT;
-		var down = controls.NOTE_DOWN;
-		var left = controls.NOTE_LEFT;
-		*/
-
-		possibleKeys = [
-			[ // 1K (0)
-				controls.NOTE_ONE
-			],
-
-			[ // 2K (1)
-				controls.NOTE_TWO1,
-				controls.NOTE_TWO2
-			],
-
-			[ // 3K (2)
-				controls.NOTE_THREE1,
-				controls.NOTE_THREE2,
-				controls.NOTE_THREE3
-			],
-
-			[ // 4K (3)
-				controls.NOTE_LEFT,
-				controls.NOTE_DOWN,
-				controls.NOTE_UP,
-				controls.NOTE_RIGHT
-			],
-
-			[ // 5K (4)
-				controls.NOTE_FIVE1,
-				controls.NOTE_FIVE2,
-				controls.NOTE_FIVE3,
-				controls.NOTE_FIVE4,
-				controls.NOTE_FIVE5
-			],
-
-			[ // 6K (5)
-				controls.NOTE_SIX1,
-				controls.NOTE_SIX2,
-				controls.NOTE_SIX3,
-				controls.NOTE_SIX4,
-				controls.NOTE_SIX5,
-				controls.NOTE_SIX6
-			],
-
-			[ // 7K (6)
-				controls.NOTE_SEVEN1,
-				controls.NOTE_SEVEN2,
-				controls.NOTE_SEVEN3,
-				controls.NOTE_SEVEN4,
-				controls.NOTE_SEVEN5,
-				controls.NOTE_SEVEN6,
-				controls.NOTE_SEVEN7
-			],
-
-			[ // 8K (7)
-				controls.NOTE_EIGHT1,
-				controls.NOTE_EIGHT2,
-				controls.NOTE_EIGHT3,
-				controls.NOTE_EIGHT4,
-				controls.NOTE_EIGHT5,
-				controls.NOTE_EIGHT6,
-				controls.NOTE_EIGHT7,
-				controls.NOTE_EIGHT8
-			],
-
-			[ // 9K (8)
-				controls.NOTE_NINE1,
-				controls.NOTE_NINE2,
-				controls.NOTE_NINE3,
-				controls.NOTE_NINE4,
-				controls.NOTE_NINE5,
-				controls.NOTE_NINE6,
-				controls.NOTE_NINE7,
-				controls.NOTE_NINE8,
-				controls.NOTE_NINE9
-			]
-		];
-		var controlHoldArray:Array<Bool> = [/*left, down, up, right*/];
-
-		// Add control bools to controlHoldArray
-		for (i in 0...keysArray[mania].length)
-		{
-			controlHoldArray.push(possibleKeys[mania][i]);
-		}
-
-		// Clean out the possibleKeys array to avoid making it too big, which could create lag
-		for (i in (possibleKeys.length-1)...-1)
-		{
-			while (possibleKeys[i].length > 0)
-				possibleKeys[i].pop();
-
-			possibleKeys.pop();
-		}
+		var parsedHoldArray:Array<Bool> = parseKeys();
 		
 		// TO DO: Find a better way to handle controller inputs, this should work for now
 		if(ClientPrefs.controllerMode)
 		{
-			possibleKeysP = [
-				[ // 1K (0)
-					controls.NOTE_ONE_P
-				],
-
-				[ // 2K (1)
-					controls.NOTE_TWO1_P,
-					controls.NOTE_TWO2_P
-				],
-
-				[ // 3K (2)
-					controls.NOTE_THREE1_P,
-					controls.NOTE_THREE2_P,
-					controls.NOTE_THREE3_P
-				],
-
-				[ // 4K (3)
-					controls.NOTE_LEFT_P,
-					controls.NOTE_DOWN_P,
-					controls.NOTE_UP_P,
-					controls.NOTE_RIGHT_P
-				],
-
-				[ // 5K (4)
-					controls.NOTE_FIVE1_P,
-					controls.NOTE_FIVE2_P,
-					controls.NOTE_FIVE3_P,
-					controls.NOTE_FIVE4_P,
-					controls.NOTE_FIVE5_P
-				],
-
-				[ // 6K (5)
-					controls.NOTE_SIX1_P,
-					controls.NOTE_SIX2_P,
-					controls.NOTE_SIX3_P,
-					controls.NOTE_SIX4_P,
-					controls.NOTE_SIX5_P,
-					controls.NOTE_SIX6_P
-				],
-
-				[ // 7K (6)
-					controls.NOTE_SEVEN1_P,
-					controls.NOTE_SEVEN2_P,
-					controls.NOTE_SEVEN3_P,
-					controls.NOTE_SEVEN4_P,
-					controls.NOTE_SEVEN5_P,
-					controls.NOTE_SEVEN6_P,
-					controls.NOTE_SEVEN7_P
-				],
-
-				[ // 8K (7)
-					controls.NOTE_EIGHT1_P,
-					controls.NOTE_EIGHT2_P,
-					controls.NOTE_EIGHT3_P,
-					controls.NOTE_EIGHT4_P,
-					controls.NOTE_EIGHT5_P,
-					controls.NOTE_EIGHT6_P,
-					controls.NOTE_EIGHT7_P,
-					controls.NOTE_EIGHT8_P
-				],
-
-				[ // 9K (8)
-					controls.NOTE_NINE1_P,
-					controls.NOTE_NINE2_P,
-					controls.NOTE_NINE3_P,
-					controls.NOTE_NINE4_P,
-					controls.NOTE_NINE5_P,
-					controls.NOTE_NINE6_P,
-					controls.NOTE_NINE7_P,
-					controls.NOTE_NINE8_P,
-					controls.NOTE_NINE9_P
-				]
-			];
-			var controlArray:Array<Bool> = [/*controls.NOTE_LEFT_P, controls.NOTE_DOWN_P, controls.NOTE_UP_P, controls.NOTE_RIGHT_P*/];
-
-			for (i in 0...keysArray[mania].length)
+			var parsedArray:Array<Bool> = parseKeys('_P');
+			if(parsedArray.contains(true))
 			{
-				controlArray.push(possibleKeysP[mania][i]);
-			}
-
-			for (i in (possibleKeysP.length-1)...-1)
-			{
-				while (possibleKeysP[i].length > 0)
-					possibleKeysP[i].pop();
-
-				possibleKeysP.pop();
-			}
-
-			if(controlArray.contains(true))
-			{
-				for (i in 0...controlArray.length)
+				for (i in 0...parsedArray.length)
 				{
-					if(controlArray[i])
+					if(parsedArray[i])
 						onKeyPress(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, -1, keysArray[mania][i][0]));
 				}
 			}
@@ -959,7 +852,7 @@ class EditorPlayState extends MusicBeatState
 			notes.forEachAlive(function(daNote:Note)
 			{
 				// hold note functions
-				if (daNote.isSustainNote && controlHoldArray[daNote.noteData] && daNote.canBeHit 
+				if (daNote.isSustainNote && parsedHoldArray[daNote.noteData] && daNote.canBeHit 
 				&& daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit) {
 					goodNoteHit(daNote);
 				}
@@ -969,103 +862,26 @@ class EditorPlayState extends MusicBeatState
 		// TO DO: Find a better way to handle controller inputs, this should work for now
 		if(ClientPrefs.controllerMode)
 		{
-			possibleKeysR = [
-				[ // 1K (0)
-					controls.NOTE_ONE_R
-				],
-
-				[ // 2K (1)
-					controls.NOTE_TWO1_R,
-					controls.NOTE_TWO2_R
-				],
-
-				[ // 3K (2)
-					controls.NOTE_THREE1_R,
-					controls.NOTE_THREE2_R,
-					controls.NOTE_THREE3_R
-				],
-
-				[ // 4K (3)
-					controls.NOTE_LEFT_R,
-					controls.NOTE_DOWN_R,
-					controls.NOTE_UP_R,
-					controls.NOTE_RIGHT_R
-				],
-
-				[ // 5K (4)
-					controls.NOTE_FIVE1_R,
-					controls.NOTE_FIVE2_R,
-					controls.NOTE_FIVE3_R,
-					controls.NOTE_FIVE4_R,
-					controls.NOTE_FIVE5_R
-				],
-
-				[ // 6K (5)
-					controls.NOTE_SIX1_R,
-					controls.NOTE_SIX2_R,
-					controls.NOTE_SIX3_R,
-					controls.NOTE_SIX4_R,
-					controls.NOTE_SIX5_R,
-					controls.NOTE_SIX6_R
-				],
-
-				[ // 7K (6)
-					controls.NOTE_SEVEN1_R,
-					controls.NOTE_SEVEN2_R,
-					controls.NOTE_SEVEN3_R,
-					controls.NOTE_SEVEN4_R,
-					controls.NOTE_SEVEN5_R,
-					controls.NOTE_SEVEN6_R,
-					controls.NOTE_SEVEN7_R
-				],
-
-				[ // 8K (7)
-					controls.NOTE_EIGHT1_R,
-					controls.NOTE_EIGHT2_R,
-					controls.NOTE_EIGHT3_R,
-					controls.NOTE_EIGHT4_R,
-					controls.NOTE_EIGHT5_R,
-					controls.NOTE_EIGHT6_R,
-					controls.NOTE_EIGHT7_R,
-					controls.NOTE_EIGHT8_R
-				],
-
-				[ // 9K (8)
-					controls.NOTE_NINE1_R,
-					controls.NOTE_NINE2_R,
-					controls.NOTE_NINE3_R,
-					controls.NOTE_NINE4_R,
-					controls.NOTE_NINE5_R,
-					controls.NOTE_NINE6_R,
-					controls.NOTE_NINE7_R,
-					controls.NOTE_NINE8_R,
-					controls.NOTE_NINE9_R
-				]
-			];
-			var controlArray:Array<Bool> = [/*controls.NOTE_LEFT_R, controls.NOTE_DOWN_R, controls.NOTE_UP_R, controls.NOTE_RIGHT_R*/];
-
-			for (i in 0...keysArray[mania].length)
+			var parsedArray:Array<Bool> = parseKeys('_R');
+			if(parsedArray.contains(true))
 			{
-				controlArray.push(possibleKeysR[mania][i]);
-			}
-
-			for (i in (possibleKeysR.length-1)...-1)
-			{
-				while (possibleKeysR[i].length > 0)
-					possibleKeysR[i].pop();
-
-				possibleKeysR.pop();
-			}
-
-			if(controlArray.contains(true))
-			{
-				for (i in 0...controlArray.length)
+				for (i in 0...parsedArray.length)
 				{
-					if(controlArray[i])
+					if(parsedArray[i])
 						onKeyRelease(new KeyboardEvent(KeyboardEvent.KEY_UP, true, true, -1, keysArray[mania][i][0]));
 				}
 			}
 		}
+	}
+
+	private function parseKeys(?suffix:String = ''):Array<Bool>
+	{
+		var ret:Array<Bool> = [];
+		for (i in 0...controlArray[mania].length)
+		{
+			ret[i] = Reflect.getProperty(controls, controlArray[mania][i] + suffix);
+		}
+		return ret;
 	}
 
 	var combo:Int = 0;
@@ -1328,7 +1144,7 @@ class EditorPlayState extends MusicBeatState
 				if(ClientPrefs.middleScroll)
 				{
 					babyArrow.x += 310;
-					if(i > Std.int(mania/2)) { //Up and Right
+					if(i > Std.int(mania / 2)) { //Up and Right
 						babyArrow.x += FlxG.width / 2 + 25;
 					}
 				}

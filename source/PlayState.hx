@@ -209,7 +209,7 @@ class PlayState extends MusicBeatState
 	public var cameraSpeed:Float = 1;
 
 	//MANIA!! OH MY GOD!!
-	public var mania:Int = SONG.mania;
+	public var mania:Null<Int> = SONG.mania;
 	public var tMania:Int;
 
 	var dialogue:Array<String> = ['blah blah blah', 'coolswag'];
@@ -352,15 +352,10 @@ class PlayState extends MusicBeatState
 		debugKeysCharacter = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_2'));
 		PauseSubState.songName = null; //Reset to default
 
-		if (mania < Note.minMania || mania > Note.maxMania) // Checks for a valid mania value
-		{
+		if (mania == null || mania < Note.minMania || mania > Note.maxMania) // Checks for a valid mania value
 			mania = Note.defaultMania;
-			tMania = mania + 1;
-		} else {
-			tMania = mania + 1;
-		}
-		//tMania = mania+1;
-		//trace("tMania is '"+tMania+"'");
+
+		tMania = mania + 1;
 
 		keysArray = [
 			[ // 1K

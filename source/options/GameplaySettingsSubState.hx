@@ -89,7 +89,7 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		option.changeValue = 0.1;
 		option.decimals = 1;
 		option.onChange = onChangeHitsoundVolume;
-
+		/*
 		var option:Option = new Option('Mania/Strum Scale Ratio',
 			'On a scale of 0 to 1, how affected are the strums\n by the song\'s mania.',
 			'maniaScaleInfluence',
@@ -100,7 +100,7 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 		option.maxValue = 1;
 		option.changeValue = 0.05;
 		addOption(option);
-
+		*/
 		var option:Option = new Option('Rating Offset',
 			'Changes how late/early you have to hit for a "Sick!"\nHigher values mean you have to hit later.',
 			'ratingOffset',
