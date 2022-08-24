@@ -337,7 +337,7 @@ class PlayState extends MusicBeatState
 	private var keysArray:Array<Array<Dynamic>>;
 	private var controlArray:Array<Array<String>>;
 	
-	private var bullHorseDog:FlxSprite;
+	//private var bullHorseDog:FlxSprite;
 
 	var precacheList:Map<String, String> = new Map<String, String>();
 
@@ -994,8 +994,8 @@ class PlayState extends MusicBeatState
 				if(!ClientPrefs.lowQuality) foregroundSprites.add(new BGSprite('tank3', 1300, 1200, 3.5, 2.5, ['fg']));
 		}
 
-		bullHorseDog = new FlxSprite(FlxG.width/2-1, 0).makeGraphic(2, FlxG.height, FlxColor.RED);
-		add(bullHorseDog);
+		//bullHorseDog = new FlxSprite(FlxG.width/2-1, 0).makeGraphic(2, FlxG.height, FlxColor.RED);
+		//add(bullHorseDog);
 
 		switch(Paths.formatToSongPath(SONG.song))
 		{
@@ -1394,7 +1394,7 @@ class PlayState extends MusicBeatState
 		timeBarBG.cameras = [camHUD];
 		timeTxt.cameras = [camHUD];
 		doof.cameras = [camHUD];
-		bullHorseDog.cameras = [camHUD];
+		//bullHorseDog.cameras = [camHUD];
 
 		// if (SONG.song == 'South')
 		// FlxG.camera.alpha = 0.7;
