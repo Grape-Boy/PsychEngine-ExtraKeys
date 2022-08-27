@@ -202,6 +202,8 @@ class ChartingState extends MusicBeatState
 		192
 	];
 
+	var iconXThing:Float = 50;
+
 	var text:String = "";
 	public static var vortex:Bool = false;
 	public var mouseQuant:Bool = false;
@@ -270,12 +272,17 @@ class ChartingState extends MusicBeatState
 		leftIcon.setGraphicSize(0, 45);
 		rightIcon.setGraphicSize(0, 45);
 
+		leftIcon.updateHitbox();
+		rightIcon.updateHitbox();
+
 		add(eventIcon);
 		add(leftIcon);
 		add(rightIcon);
 
-		leftIcon.setPosition(GRID_SIZE + 10, -100);
-		rightIcon.setPosition(GRID_SIZE * 5.2, -100);
+		iconXThing = 10*tMania + 10 + 10*(tMania-4); // i'm so fucking smart
+
+		leftIcon.setPosition(iconXThing, -100);
+		rightIcon.setPosition(360 - iconXThing, -100);
 
 		curRenderedSustains = new FlxTypedGroup<FlxSprite>();
 		curRenderedNotes = new FlxTypedGroup<Note>();
@@ -2110,8 +2117,10 @@ class ChartingState extends MusicBeatState
 		}
 		#end
 
-		leftIcon.setPosition( (GRID_SIZE + 10) + (GRID_SIZE*mania)/2 , -100); // fuck math
-		rightIcon.setPosition(GRID_SIZE * 5.2, -100);
+		iconXThing = 10*tMania + 10 + 10*(tMania-4);
+
+		leftIcon.setPosition(iconXThing, -100);
+		rightIcon.setPosition(  gridBG.width - GRID_SIZE - iconXThing - rightIcon.width*1.4, -100); // if you can't beat em, join em
 
 		var leHeight:Int = Std.int(gridBG.height);
 		var foundNextSec:Bool = false;
@@ -2134,7 +2143,7 @@ class ChartingState extends MusicBeatState
 			gridLayer.add(gridBlack);
 		}
 
-		var gridBlackLine:FlxSprite = new FlxSprite(gridBG.x + gridBG.width - (GRID_SIZE * tMania)).makeGraphic(2, leHeight, FlxColor.BLACK);
+		var gridBlackLine:FlxSprite = new FlxSprite(gridBG.x + gridBG.width - (GRID_SIZE * tMania) - 2).makeGraphic(2, leHeight, FlxColor.BLACK);
 		gridLayer.add(gridBlackLine);
 
 		for (i in 1...4) {

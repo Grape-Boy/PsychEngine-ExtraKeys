@@ -78,7 +78,7 @@ using StringTools;
 
 class PlayState extends MusicBeatState
 {
-	public static var STRUM_X = 42;
+	public static var STRUM_X:Array<Float> = [178, 136, 82, 42, 6, -12, -28, -36, -50];
 	public static var STRUM_X_MIDDLESCROLL:Array<Float> = [-116, -168, -222, -278, -306, -326, -345, -354, -358]; // a number that's not even!! :scream:
 
 	public static var ratingStuff:Array<Dynamic> = [
@@ -1187,12 +1187,12 @@ class PlayState extends MusicBeatState
 
 		Conductor.songPosition = -5000;
 
-		strumLine = new FlxSprite(ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL[mania] : STRUM_X , 50).makeGraphic(FlxG.width, 10);
+		strumLine = new FlxSprite(ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL[mania] : STRUM_X[mania] , 50).makeGraphic(FlxG.width, 10);
 		if(ClientPrefs.downScroll) strumLine.y = FlxG.height - 150;
 		strumLine.scrollFactor.set();
 
 		var showTime:Bool = (ClientPrefs.timeBarType != 'Disabled');
-		timeTxt = new FlxText(STRUM_X + (FlxG.width / 2) - 248, 19, 400, "", 32);
+		timeTxt = new FlxText(42 + (FlxG.width / 2) - 248, 19, 400, "", 32);
 		timeTxt.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		timeTxt.scrollFactor.set();
 		timeTxt.alpha = 0;
@@ -2845,7 +2845,7 @@ class PlayState extends MusicBeatState
 				else if(ClientPrefs.middleScroll) targetAlpha = 0.35;
 			}
 
-			var babyArrow:StrumNote = new StrumNote(ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL[mania] : STRUM_X, strumLine.y, i, player, mania);
+			var babyArrow:StrumNote = new StrumNote(ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL[mania] : STRUM_X[mania], strumLine.y, i, player, mania);
 			//babyArrow.setGraphicSize(Std.int(babyArrow.width * Note.noteScales[mania]));
 			//babyArrow.updateHitbox();
 			babyArrow.downScroll = ClientPrefs.downScroll;
@@ -4332,7 +4332,7 @@ class PlayState extends MusicBeatState
 		//tryna do MS based judgment due to popular demand
 		var daRating:Rating = Conductor.judgeNote(note, noteDiff);
 
-		if (!note.noCountNote)
+		if (note.countNote)
 			totalNotesHit += daRating.ratingMod;
 		note.ratingMod = daRating.ratingMod;
 		if(!note.ratingDisabled) daRating.increase();

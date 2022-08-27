@@ -31,10 +31,9 @@ The Chart Editor allows you to chart songs from 1K to 9K.
 * Dodge Note: This note instantly kills the player when missed (from Shaggy x Matt)
 ### Note Properties
 * `noAddScore`: Notes with this property set to true won't add to the total score [UNTESTED]
-* `noCountNote`: The note won't be counted in the total amount of notes hit if set to true [UNTESTED]
 * `noCombo`: If a note with this property set to true gets hit, it won't add to the combo
 * `noStrumAnim`: If a note with this property set to true gets hit, the strum won't glow
-
+* `countNote`: The note won't be counted in the total amount of notes hit if set to true [UNTESTED]
 # Friday Night Funkin' - Psych Engine
 Engine originally used on [Mind Games Mod](https://gamebanana.com/mods/301107), intended to be a fix for the vanilla version's many issues while keeping the casual play aspect of it. Also aiming to be an easier alternative to newbie coders.
 

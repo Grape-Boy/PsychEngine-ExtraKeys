@@ -78,7 +78,7 @@ class StrumNote extends FlxSprite
 			loadGraphic(Paths.image('pixelUI/' + texture), true, Math.floor(width), Math.floor(height));
 
 			antialiasing = false;
-			setGraphicSize(Std.int(width * PlayState.daPixelZoom));
+			setGraphicSize(Std.int(width * PlayState.daPixelZoom * (Note.noteScales[mania] + 0.3)));
 
 			animation.add('purple', [9]);
 			animation.add('blue', [10]);

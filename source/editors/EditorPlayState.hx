@@ -237,7 +237,7 @@ class EditorPlayState extends MusicBeatState
 			]
 		];
 		
-		strumLine = new FlxSprite(ClientPrefs.middleScroll ? PlayState.STRUM_X_MIDDLESCROLL[mania] : PlayState.STRUM_X, 50).makeGraphic(FlxG.width, 10);
+		strumLine = new FlxSprite(ClientPrefs.middleScroll ? PlayState.STRUM_X_MIDDLESCROLL[mania] : PlayState.STRUM_X[mania], 50).makeGraphic(FlxG.width, 10);
 		if(ClientPrefs.downScroll) strumLine.y = FlxG.height - 150;
 		strumLine.scrollFactor.set();
 		
@@ -394,7 +394,7 @@ class EditorPlayState extends MusicBeatState
 						else
 							oldNote = null;
 
-						var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, false, true, mania);
+						var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, false, false, mania);
 						swagNote.mustPress = gottaHitNote;
 						swagNote.sustainLength = songNotes[2];
 						swagNote.noteType = songNotes[3];
@@ -1132,7 +1132,7 @@ class EditorPlayState extends MusicBeatState
 				else if(ClientPrefs.middleScroll) targetAlpha = 0.35;
 			}
 
-			var babyArrow:StrumNote = new StrumNote(ClientPrefs.middleScroll ? PlayState.STRUM_X_MIDDLESCROLL[mania] : PlayState.STRUM_X, strumLine.y, i, player, mania);
+			var babyArrow:StrumNote = new StrumNote(ClientPrefs.middleScroll ? PlayState.STRUM_X_MIDDLESCROLL[mania] : PlayState.STRUM_X[mania], strumLine.y, i, player, mania);
 			babyArrow.alpha = targetAlpha;
 
 			if (player == 1)
@@ -1183,22 +1183,30 @@ class EditorPlayState extends MusicBeatState
 		}
 	}
 
-	function spawnNoteSplash(x:Float, y:Float, data:Int, ?note:Note = null) {
+	public function spawnNoteSplash(x:Float, y:Float, data:Int, ?note:Note = null) {
 		var skin:String = 'noteSplashes';
 		if(PlayState.SONG.splashSkin != null && PlayState.SONG.splashSkin.length > 0) skin = PlayState.SONG.splashSkin;
-		
-		var hue:Float = ClientPrefs.arrowHSV[data % tMania][0] / 360;
-		var sat:Float = ClientPrefs.arrowHSV[data % tMania][1] / 100;
-		var brt:Float = ClientPrefs.arrowHSV[data % tMania][2] / 100;
-		if(note != null) {
-			skin = note.noteSplashTexture;
-			hue = note.noteSplashHue;
-			sat = note.noteSplashSat;
-			brt = note.noteSplashBrt;
+
+		var hue:Float = 0;
+		var sat:Float = 0;
+		var brt:Float = 0;
+		if (data > -1 && data < ClientPrefs.arrowHSV.length)
+		{
+			var poopPiss:Int = Note.splashNums[mania][data % tMania];
+
+			hue = ClientPrefs.arrowHSV[poopPiss][0] / 360;
+			sat = ClientPrefs.arrowHSV[poopPiss][1] / 100;
+			brt = ClientPrefs.arrowHSV[poopPiss][2] / 100;
+			if(note != null) {
+				skin = note.noteSplashTexture;
+				hue = note.noteSplashHue;
+				sat = note.noteSplashSat;
+				brt = note.noteSplashBrt;
+			}
 		}
 
 		var splash:NoteSplash = grpNoteSplashes.recycle(NoteSplash);
-		splash.setupNoteSplash(x, y, data, skin, hue, sat, brt);
+		splash.setupNoteSplash(x, y, data, skin, hue, sat, brt, mania);
 		grpNoteSplashes.add(splash);
 	}
 	

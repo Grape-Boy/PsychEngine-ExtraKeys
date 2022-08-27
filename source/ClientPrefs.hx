@@ -137,7 +137,6 @@ class ClientPrefs {
 		'debug_2'		=> [EIGHT, NONE]
 	];
 	public static var defaultKeys:Map<String, Array<FlxKey>> = null;
-	public static var maniaScaleInfluence:Float = 1;
 
 	public static function loadDefaultKeys() {
 		defaultKeys = keyBinds.copy();
@@ -180,8 +179,6 @@ class ClientPrefs {
 		FlxG.save.data.hitsoundVolume = hitsoundVolume;
 		FlxG.save.data.pauseMusic = pauseMusic;
 		FlxG.save.data.checkForUpdates = checkForUpdates;
-
-		FlxG.save.data.maniaScaleInfluence = maniaScaleInfluence;
 	
 		FlxG.save.flush();
 
@@ -301,10 +298,6 @@ class ClientPrefs {
 			{
 				gameplaySettings.set(name, value);
 			}
-		}
-
-		if(FlxG.save.data.maniaScaleInfluence != null) {
-			maniaScaleInfluence = FlxG.save.data.maniaScaleInfluence;
 		}
 		
 		// flixel automatically saves your volume!

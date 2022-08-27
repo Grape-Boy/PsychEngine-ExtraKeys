@@ -133,7 +133,7 @@ class Note extends FlxSprite
 		Std.int(160 * 0.53), 	// 7
 		Std.int(160 * 0.48), 	// 8
 		Std.int(160 * 0.43) 	// 9
-	]; // "why weird factors?" because the notes are too far apart if I don't
+	]; // "why weird factors?" because the notes are too far apart if I don't // this is actually kinda cringe tbh
 
 	public static var PURP_NOTE:Int = 0;
 	public static var BLUE_NOTE:Int = 1;
@@ -174,9 +174,9 @@ class Note extends FlxSprite
 	public var texture(default, set):String = null;
 
 	public var noAddScore:Bool = false; // note doesn't add score
-	public var noCountNote:Bool = false; // note isn't counted in total notes hit
 	public var noCombo:Bool = false; // doesn't add to combo
 	public var noStrumAnim:Bool = false; // no strum glow
+	public var countNote:Bool = true; // note isn't counted in total notes hit
 	public var noAnimation:Bool = false;
 	public var noMissAnimation:Bool = false;
 	public var hitCausesMiss:Bool = false;
@@ -283,7 +283,7 @@ class Note extends FlxSprite
 		isSustainNote = sustainNote;
 		this.inEditor = inEditor;
 
-		x += (ClientPrefs.middleScroll ? PlayState.STRUM_X_MIDDLESCROLL[mania] : PlayState.STRUM_X) + 50;
+		x += (ClientPrefs.middleScroll ? PlayState.STRUM_X_MIDDLESCROLL[mania] : PlayState.STRUM_X[mania]) + 50;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y -= 2000;
 		this.strumTime = strumTime;
@@ -387,7 +387,7 @@ class Note extends FlxSprite
 			}
 
 			if(PlayState.isPixelStage) {
-				scale.y *= PlayState.daPixelZoom;
+				scale.y *= PlayState.daPixelZoom * (Note.noteScales[mania] + 0.3);
 				updateHitbox();
 			}
 		} else if(!isSustainNote) {
@@ -435,7 +435,7 @@ class Note extends FlxSprite
 				height = height / 5;
 				loadGraphic(Paths.image('pixelUI/' + blahblah), true, Math.floor(width), Math.floor(height));
 			}
-			setGraphicSize(Std.int(width * PlayState.daPixelZoom));
+			setGraphicSize(Std.int(width * PlayState.daPixelZoom * (Note.noteScales[mania] + 0.3)));
 			loadPixelNoteAnims();
 			antialiasing = false;
 
