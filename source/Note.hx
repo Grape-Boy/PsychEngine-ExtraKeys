@@ -470,7 +470,7 @@ class Note extends FlxSprite
 		}
 	}
 
-	function loadNoteAnims() {
+	function loadNoteAnims() {/*
 		animation.addByPrefix('purpleScroll', 'purple0');
 		animation.addByPrefix('blueScroll', 'blue0');
 		animation.addByPrefix('greenScroll', 'green0');
@@ -481,7 +481,9 @@ class Note extends FlxSprite
 		animation.addByPrefix('yellowScroll', 'yellow0');
 		animation.addByPrefix('violetScroll', 'violet0');
 		animation.addByPrefix('blackScroll', 'black0');
-		animation.addByPrefix('darkScroll', 'dark0');
+		animation.addByPrefix('darkScroll', 'dark0');*/
+
+		for (i in 0...9) animation.addByPrefix(arrowColors[8][i] + 'Scroll', arrowColors[8][i] + '0');
 
 		animation.addByPrefix('deathNote', 'kill0');
 		animation.addByPrefix('dodgeNote', 'live0');
@@ -489,7 +491,7 @@ class Note extends FlxSprite
 		if (isSustainNote)
 		{
 			// Hold Ends
-
+			/*
 			animation.addByPrefix('purpleholdend', 'purple hold end'); // i forgot that i changed it to 'purple hold end', so 'purple end hold' made the game crash
 			animation.addByPrefix('blueholdend', 'blue hold end');
 			animation.addByPrefix('greenholdend', 'green hold end');
@@ -500,10 +502,12 @@ class Note extends FlxSprite
 			animation.addByPrefix('yellowholdend', 'yellow hold end');
 			animation.addByPrefix('violetholdend', 'violet hold end');
 			animation.addByPrefix('blackholdend', 'black hold end');
-			animation.addByPrefix('darkholdend', 'dark hold end');
+			animation.addByPrefix('darkholdend', 'dark hold end');*/
+
+			for (i in 0...9) animation.addByPrefix(arrowColors[8][i] + 'holdend', arrowColors[8][i] + ' hold end');
 
 			// Hold Pieces
-
+			/*
 			animation.addByPrefix('purplehold', 'purple hold piece');
 			animation.addByPrefix('bluehold', 'blue hold piece');
 			animation.addByPrefix('greenhold', 'green hold piece');
@@ -514,7 +518,9 @@ class Note extends FlxSprite
 			animation.addByPrefix('yellowhold', 'yellow hold piece');
 			animation.addByPrefix('violethold', 'violet hold piece');
 			animation.addByPrefix('blackhold', 'black hold piece');
-			animation.addByPrefix('darkhold', 'dark hold piece');
+			animation.addByPrefix('darkhold', 'dark hold piece');*/
+
+			for (i in 0...9) animation.addByPrefix(arrowColors[8][i] + 'hold', arrowColors[8][i] + ' hold piece');
 		}
 
 		setGraphicSize(Std.int(width * Note.noteScales[mania]));
