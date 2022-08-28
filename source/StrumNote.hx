@@ -17,12 +17,6 @@ class StrumNote extends FlxSprite
 	public var downScroll:Bool = false;//plan on doing scroll directions soon -bb
 	public var sustainReduce:Bool = true;
 
-	public static var aL:String = "arrowLEFT";
-	public static var aD:String = "arrowDOWN";
-	public static var aS:String = "arrowSPACE";
-	public static var aU:String = "arrowUP";
-	public static var aR:String = "arrowRIGHT";
-	
 	private var player:Int;
 	
 	public var texture(default, set):String = null;
@@ -80,106 +74,23 @@ class StrumNote extends FlxSprite
 			antialiasing = false;
 			setGraphicSize(Std.int(width * PlayState.daPixelZoom * (Note.noteScales[mania] + 0.3)));
 
-			animation.add('purple', [9]);
-			animation.add('blue', [10]);
-			animation.add('green', [11]);
-			animation.add('red', [12]);
-
-			animation.add('white', [13]);
-
-			animation.add('yellow', [14]);
-			animation.add('violet', [15]);
-			animation.add('black', [16]);
-			animation.add('dark', [17]);
+			for (i in 0...9) animation.add(Note.arrowColors[8][i], [Note.splashNums[8][i] + 9]);
 
 			addAnimPIXEL(Std.int( Math.abs(noteData) % tMania ));
 			//setGraphicSize(Std.int(width * Note.noteScales[mania]));
 			updateHitbox();
-			/*
-			switch (Math.abs(noteData))
-			{
-				case 0:
-					animation.add('static', [0]);
-					animation.add('pressed', [4, 8], 12, false);
-					animation.add('confirm', [12, 16], 24, false);
-				case 1:
-					animation.add('static', [1]);
-					animation.add('pressed', [5, 9], 12, false);
-					animation.add('confirm', [13, 17], 24, false);
-				case 2:
-					animation.add('static', [2]);
-					animation.add('pressed', [6, 10], 12, false);
-					animation.add('confirm', [14, 18], 12, false);
-				case 3:
-					animation.add('static', [3]);
-					animation.add('pressed', [7, 11], 12, false);
-					animation.add('confirm', [15, 19], 24, false);
-			}*/
 		}
 		else
 		{
 			frames = Paths.getSparrowAtlas(texture);
-			animation.addByPrefix('purple', 'arrowLEFT');
-			animation.addByPrefix('blue', 'arrowDOWN');
-			animation.addByPrefix('green', 'arrowUP');
-			animation.addByPrefix('red', 'arrowRIGHT');
 
-			animation.addByPrefix('white', 'arrowSPACE');
-
-			animation.addByPrefix('yellow', 'arrowLEFT');
-			animation.addByPrefix('violet', 'arrowDOWN');
-			animation.addByPrefix('black', 'arrowUP');
-			animation.addByPrefix('dark', 'arrowRIGHT');
+			for (i in 0...9) animation.addByPrefix(Note.arrowColors[8][i], Note.strumDirs[8][i]);
 
 			antialiasing = ClientPrefs.globalAntialiasing;
 			setGraphicSize(Std.int(width * Note.noteScales[mania]));
 			updateHitbox();
-			/*
-			switch (Math.abs(noteData))
-			{
-				case 0:
-					animation.addByPrefix('static', 'arrowLEFT');
-					animation.addByPrefix('pressed', 'left press', 24, false);
-					animation.addByPrefix('confirm', 'left confirm', 24, false);
-				case 1:
-					animation.addByPrefix('static', 'arrowDOWN');
-					animation.addByPrefix('pressed', 'down press', 24, false);
-					animation.addByPrefix('confirm', 'down confirm', 24, false);
-				case 2:
-					animation.addByPrefix('static', 'arrowUP');
-					animation.addByPrefix('pressed', 'up press', 24, false);
-					animation.addByPrefix('confirm', 'up confirm', 24, false);
-				case 3:
-					animation.addByPrefix('static', 'arrowRIGHT');
-					animation.addByPrefix('pressed', 'right press', 24, false);
-					animation.addByPrefix('confirm', 'right confirm', 24, false);
-			}*/
 
-			var arrowColors:Array<Array<Array<String>>> = [ // wtf
-
-				// [a, ""]
-
-				[ [aS, "white"] ],
-
-				[ [aL, "left"], [aR, "right"] ],
-
-				[ [aL, "left"], [aS, "white"], [aR, "right"] ],
-
-				[ [aL, "left"], [aD, "down"], [aU, "up"], [aR, "right"] ],
-
-				[ [aL, "left"], [aD, "down"], [aS, "white"], [aU, "up"], [aR, "right"] ],
-
-				[ [aL, "left"], [aU, "up"], [aR, "right"], [aL, "yellow"], [aD, "down"], [aR, "dark"] ],
-
-				[ [aL, "left"], [aU, "up"], [aR, "right"], [aS, "white"], [aL, "yellow"], [aD, "down"], [aR, "dark"] ],
-
-				[ [aL, "left"], [aD, "down"], [aU, "up"], [aR, "right"], [aL, "yellow"], [aD, "violet"], [aU, "black"], [aR, "dark"] ],
-
-				[ [aL, "left"], [aD, "down"], [aU, "up"], [aR, "right"], [aS, "white"], [aL, "yellow"], [aD, "violet"], [aU, "black"], [aR, "dark"] ]
-
-			];
-
-			addAnim(arrowColors[mania][Std.int(Math.abs(noteData))][0], arrowColors[mania][Std.int(Math.abs(noteData))][1]);
+			addAnim(Note.strumDirs[mania][Std.int(Math.abs(noteData))], Note.arrowDirColors[mania][Std.int(Math.abs(noteData))]);
 		}
 		updateHitbox();
 

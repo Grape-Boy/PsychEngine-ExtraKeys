@@ -49,19 +49,49 @@ class Note extends FlxSprite
 
 	];
 
-	/*
-	purple = 0
-	down = 1
-	up = 2
-	right = 3
+	public static var arrowDirColors:Array<Array<String>> = [ // same thing but for the xml names
 
-	white = 4
+		[ "white" ], // 1K
 
-	yellow = 5
-	violet = 6
-	black = 7
-	dark = 8
-	*/
+		[ "left", "right" ], // 2K
+
+		[ "left", "white", "right" ], // 3K
+
+		[ "left", "down", "up", "right" ], // 4K
+
+		[ "left", "down", "white", "up", "right" ], // 5K
+
+		[ "left", "up", "right", "yellow", "down", "dark" ], // 6K
+
+		[ "left", "up", "right", "white", "yellow", "down", "dark" ], // 7K
+
+		[ "left", "down", "up", "right", "yellow", "violet", "black", "dark" ], // 8K
+
+		[ "left", "down", "up", "right", "white", "yellow", "violet", "black", "dark" ] // 9K
+
+	];
+
+	public static var strumDirs:Array<Array<String>> = [
+
+		[ "arrowSPACE" ],
+
+		[ "arrowLEFT", "arrowRIGHT" ],
+
+		[ "arrowLEFT", "arrowSPACE", "arrowRIGHT" ],
+
+		[ "arrowLEFT", "arrowDOWN", "arrowUP", "arrowRIGHT" ],
+
+		[ "arrowLEFT", "arrowDOWN", "arrowSPACE", "arrowUP", "arrowRIGHT" ],
+
+		[ "arrowLEFT", "arrowUP", "arrowRIGHT", "arrowLEFT", "arrowDOWN", "arrowRIGHT" ],
+
+		[ "arrowLEFT", "arrowUP", "arrowRIGHT", "arrowSPACE", "arrowLEFT", "arrowDOWN", "arrowRIGHT" ],
+
+		[ "arrowLEFT", "arrowDOWN", "arrowUP", "arrowRIGHT", "arrowLEFT", "arrowDOWN", "arrowUP", "arrowRIGHT" ],
+
+		[ "arrowLEFT", "arrowDOWN", "arrowUP", "arrowRIGHT", "arrowSPACE", "arrowLEFT", "arrowDOWN", "arrowUP", "arrowRIGHT" ]
+
+	];
 
 	public static var splashNums:Array<Array<Int>> = [
 
@@ -302,20 +332,9 @@ class Note extends FlxSprite
 			
 			if(!isSustainNote && noteData > -1 && noteData < tMania) { //Doing this 'if' check to fix the warnings on Senpai songs
 				var animToPlay:String = '';
+
 				animToPlay = arrowColors[mania][noteData % tMania];
-				/*
-				switch (noteData % 4)
-				{
-					case 0:
-						animToPlay = 'purple';
-					case 1:
-						animToPlay = 'blue';
-					case 2:
-						animToPlay = 'green';
-					case 3:
-						animToPlay = 'red';
-				}
-				*/
+
 				animation.play(animToPlay + 'Scroll');
 			}
 		}
@@ -336,19 +355,7 @@ class Note extends FlxSprite
 			copyAngle = false;
 
 			animation.play(Std.string(arrowColors[mania][noteData % tMania] + 'holdend'));
-			/*
-			switch (noteData)
-			{
-				case 0:
-					animation.play('purpleholdend');
-				case 1:
-					animation.play('blueholdend');
-				case 2:
-					animation.play('greenholdend');
-				case 3:
-					animation.play('redholdend');
-			}
-			*/
+
 			updateHitbox();
 
 			offsetX -= width / 2;
@@ -359,19 +366,7 @@ class Note extends FlxSprite
 			if (prevNote.isSustainNote)
 			{
 				prevNote.animation.play(Std.string(arrowColors[mania][prevNote.noteData % tMania] + 'hold'));
-				/*
-				switch (prevNote.noteData)
-				{
-					case 0:
-						prevNote.animation.play('purplehold');
-					case 1:
-						prevNote.animation.play('bluehold');
-					case 2:
-						prevNote.animation.play('greenhold');
-					case 3:
-						prevNote.animation.play('redhold');
-				}
-				*/
+				
 				prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.05;
 				if(PlayState.instance != null)
 				{
@@ -470,18 +465,7 @@ class Note extends FlxSprite
 		}
 	}
 
-	function loadNoteAnims() {/*
-		animation.addByPrefix('purpleScroll', 'purple0');
-		animation.addByPrefix('blueScroll', 'blue0');
-		animation.addByPrefix('greenScroll', 'green0');
-		animation.addByPrefix('redScroll', 'red0');
-
-		animation.addByPrefix('whiteScroll', 'white0');
-
-		animation.addByPrefix('yellowScroll', 'yellow0');
-		animation.addByPrefix('violetScroll', 'violet0');
-		animation.addByPrefix('blackScroll', 'black0');
-		animation.addByPrefix('darkScroll', 'dark0');*/
+	function loadNoteAnims() {
 
 		for (i in 0...9) animation.addByPrefix(arrowColors[8][i] + 'Scroll', arrowColors[8][i] + '0');
 
@@ -491,34 +475,10 @@ class Note extends FlxSprite
 		if (isSustainNote)
 		{
 			// Hold Ends
-			/*
-			animation.addByPrefix('purpleholdend', 'purple hold end'); // i forgot that i changed it to 'purple hold end', so 'purple end hold' made the game crash
-			animation.addByPrefix('blueholdend', 'blue hold end');
-			animation.addByPrefix('greenholdend', 'green hold end');
-			animation.addByPrefix('redholdend', 'red hold end');
-
-			animation.addByPrefix('whiteholdend', 'white hold end');
-
-			animation.addByPrefix('yellowholdend', 'yellow hold end');
-			animation.addByPrefix('violetholdend', 'violet hold end');
-			animation.addByPrefix('blackholdend', 'black hold end');
-			animation.addByPrefix('darkholdend', 'dark hold end');*/
 
 			for (i in 0...9) animation.addByPrefix(arrowColors[8][i] + 'holdend', arrowColors[8][i] + ' hold end');
 
 			// Hold Pieces
-			/*
-			animation.addByPrefix('purplehold', 'purple hold piece');
-			animation.addByPrefix('bluehold', 'blue hold piece');
-			animation.addByPrefix('greenhold', 'green hold piece');
-			animation.addByPrefix('redhold', 'red hold piece');
-
-			animation.addByPrefix('whitehold', 'white hold piece');
-
-			animation.addByPrefix('yellowhold', 'yellow hold piece');
-			animation.addByPrefix('violethold', 'violet hold piece');
-			animation.addByPrefix('blackhold', 'black hold piece');
-			animation.addByPrefix('darkhold', 'dark hold piece');*/
 
 			for (i in 0...9) animation.addByPrefix(arrowColors[8][i] + 'hold', arrowColors[8][i] + ' hold piece');
 		}
@@ -531,43 +491,15 @@ class Note extends FlxSprite
 		if(isSustainNote) {
 			// Hold Ends
 
-			animation.add('purpleholdend', [PURP_NOTE + 9]);
-			animation.add('blueholdend', [BLUE_NOTE + 9]);
-			animation.add('greenholdend', [GREEN_NOTE + 9]);
-			animation.add('redholdend', [RED_NOTE + 9]);
-
-			animation.add('whiteholdend', [WHITE_NOTE + 9]);
-			
-			animation.add('yellowholdend', [YELLOW_NOTE + 9]);
-			animation.add('violetholdend', [VIOLET_NOTE + 9]);
-			animation.add('blackholdend', [BLACK_NOTE + 9]);
-			animation.add('darkholdend', [DARK_NOTE + 9]);
+			for (i in 0...9) animation.add(arrowColors[8][i] + 'holdend', [splashNums[8][i] + 9]);
 
 			// Hold Pieces
 
-			animation.add('purplehold', [PURP_NOTE]);
-			animation.add('bluehold', [BLUE_NOTE]);
-			animation.add('greenhold', [GREEN_NOTE]);
-			animation.add('redhold', [RED_NOTE]);
+			for (i in 0...9) animation.add(arrowColors[8][i] + 'hold', [splashNums[8][i]]);
 
-			animation.add('whitehold', [WHITE_NOTE]);
-			
-			animation.add('yellowhold', [YELLOW_NOTE]);
-			animation.add('violethold', [VIOLET_NOTE]);
-			animation.add('blackhold', [BLACK_NOTE]);
-			animation.add('darkhold', [DARK_NOTE]);
 		} else {
-			animation.add('purpleScroll', [PURP_NOTE + 9]);
-			animation.add('blueScroll', [BLUE_NOTE + 9]);
-			animation.add('greenScroll', [GREEN_NOTE + 9]);
-			animation.add('redScroll', [RED_NOTE + 9]);
 
-			animation.add('whiteScroll', [WHITE_NOTE + 9]);
-			
-			animation.add('yellowScroll', [YELLOW_NOTE + 9]);
-			animation.add('violetScroll', [VIOLET_NOTE + 9]);
-			animation.add('blackScroll', [BLACK_NOTE + 9]);
-			animation.add('darkScroll', [DARK_NOTE + 9]);
+			for (i in 0...9) animation.add(arrowColors[8][i] + 'Scroll', [splashNums[8][i] + 9]);
 		}
 	}
 
