@@ -128,6 +128,8 @@ class FunkinLua {
 
 		set('isStoryMode', PlayState.isStoryMode);
 		set('difficulty', PlayState.storyDifficulty);
+		set('mania', PlayState.mania);
+		set('oldMania', PlayState.oldMania);
 
 		var difficultyName:String = CoolUtil.difficulties[PlayState.storyDifficulty];
 		set('difficultyName', difficultyName);
@@ -171,7 +173,7 @@ class FunkinLua {
 		set('botPlay', PlayState.instance.cpuControlled);
 		set('practice', PlayState.instance.practiceMode);
 
-		for (i in 0...4) {
+		for (i in 0...Note.maxMania+1) {
 			set('defaultPlayerStrumX' + i, 0);
 			set('defaultPlayerStrumY' + i, 0);
 			set('defaultOpponentStrumX' + i, 0);

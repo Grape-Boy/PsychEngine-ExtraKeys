@@ -209,8 +209,9 @@ class PlayState extends MusicBeatState
 	public var cameraSpeed:Float = 1;
 
 	//MANIA!! OH MY GOD!!
-	public var mania:Null<Int> = SONG.mania;
-	public var tMania:Int;
+	public static var mania:Null<Int>;
+	public static var tMania:Int;
+	public static var oldMania:Int = 0;
 
 	var dialogue:Array<String> = ['blah blah blah', 'coolswag'];
 	var dialogueJson:DialogueFile = null;
@@ -351,6 +352,8 @@ class PlayState extends MusicBeatState
 		debugKeysChart = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_1'));
 		debugKeysCharacter = ClientPrefs.copyKey(ClientPrefs.keyBinds.get('debug_2'));
 		PauseSubState.songName = null; //Reset to default
+
+		mania = SONG.mania;
 
 		if (mania == null || mania < Note.minMania || mania > Note.maxMania) // Checks for a valid mania value
 			mania = Note.defaultMania;
@@ -2881,10 +2884,86 @@ class PlayState extends MusicBeatState
 		}
 	}
 
+	function updateNote(note:Note)
+	{
+		note.scale.set(1, 1);
+		note.updateHitbox();
+
+		/*
+		if (!isPixelStage) {
+			note.setGraphicSize(Std.int(note.width * Note.noteScales[mania]));
+			note.updateHitbox();
+		} else {
+			note.setGraphicSize(Std.int(note.width * daPixelZoom * (Note.noteScales[mania] + 0.3)));
+			note.updateHitbox();
+		}
+		*/
+
+		// Like reloadNote()
+
+		var lastScaleY:Float = note.scale.y;
+		if (isPixelStage) {
+			if (note.isSustainNote) {note.originalHeightForCalcs = note.height;}
+
+			note.setGraphicSize(Std.int(note.width * daPixelZoom * (Note.noteScales[mania] + 0.3)));
+		} else {
+			// Like loadNoteAnims()
+
+			note.setGraphicSize(Std.int(note.width * Note.noteScales[mania]));
+			note.updateHitbox();
+		}
+
+		if (note.isSustainNote) {note.scale.y = lastScaleY;}
+		note.updateHitbox();
+
+		// Like new()
+
+		var prevNote:Note = note.prevNote;
+		
+		if (note.isSustainNote && prevNote != null) {
+			
+			note.offsetX += note.width / 2;
+
+			note.animation.play( Std.string( Note.arrowColors[mania][note.noteData % tMania] + 'holdend') );
+
+			note.updateHitbox();
+
+			note.offsetX -= note.width / 2;
+
+			if (isPixelStage) {
+				note.scale.y *= daPixelZoom * (Note.noteScales[mania] + 0.3);
+				note.updateHitbox();
+			}
+
+			if (note != null && prevNote != null && prevNote.isSustainNote && prevNote.animation != null) { // haxe flixel
+				prevNote.animation.play( Std.string( Note.arrowColors[mania][note.noteData % tMania] + 'hold') );
+
+				prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.05;
+				prevNote.scale.y *= songSpeed;
+
+				if(isPixelStage) {
+					prevNote.scale.y *= 1.19;
+					prevNote.scale.y *= (6 / note.height);
+				}
+
+				prevNote.updateHitbox();
+			}
+		} else if (!note.isSustainNote && note.noteData > - 1 && note.noteData < tMania) {
+			var animToPlay:String = '';
+
+			animToPlay = Note.arrowColors[mania][note.noteData % tMania];
+
+			note.animation.play(animToPlay + 'Scroll');
+		}
+	}
+
 	function changeMania(newValue:Int)
 	{
+		
 		//funny dissapear transitions
 		//while new strums appear
+
+		//thank you so much tpose
 		if (!isStoryMode)
 		{
 			for (i in 0...playerStrums.members.length) {
@@ -2919,9 +2998,22 @@ class PlayState extends MusicBeatState
 				}});
 			}
 		}
-		
+
+		oldMania = mania;
+
 		mania = newValue;
 		tMania = mania+1;
+
+		setOnLuas('mania', mania);
+		setOnLuas('oldMania', oldMania);
+		
+		notes.forEachAlive(function(note:Note) {updateNote(note);});
+
+		for (noteI in 0...unspawnNotes.length) {
+			var note:Note = unspawnNotes[noteI];
+
+			updateNote(note);
+		}
 		
 		playerStrums.clear();
 		opponentStrums.clear();
@@ -3378,12 +3470,14 @@ class PlayState extends MusicBeatState
 				var strumGroup:FlxTypedGroup<StrumNote> = playerStrums;
 				if(!daNote.mustPress) strumGroup = opponentStrums;
 
-				var strumX:Float = strumGroup.members[daNote.noteData].x;
-				var strumY:Float = strumGroup.members[daNote.noteData].y;
-				var strumAngle:Float = strumGroup.members[daNote.noteData].angle;
-				var strumDirection:Float = strumGroup.members[daNote.noteData].direction;
-				var strumAlpha:Float = strumGroup.members[daNote.noteData].alpha;
-				var strumScroll:Bool = strumGroup.members[daNote.noteData].downScroll;
+				var realNum:Int = daNote.noteData % tMania;
+
+				var strumX:Float = strumGroup.members[realNum].x;
+				var strumY:Float = strumGroup.members[realNum].y;
+				var strumAngle:Float = strumGroup.members[realNum].angle;
+				var strumDirection:Float = strumGroup.members[realNum].direction;
+				var strumAlpha:Float = strumGroup.members[realNum].alpha;
+				var strumScroll:Bool = strumGroup.members[realNum].downScroll;
 
 				strumX += daNote.offsetX;
 				strumY += daNote.offsetY;
@@ -3448,7 +3542,7 @@ class PlayState extends MusicBeatState
 				}
 
 				var center:Float = strumY + Note.swagWidth[mania] / 2;
-				if(strumGroup.members[daNote.noteData].sustainReduce && daNote.isSustainNote && (daNote.mustPress || !daNote.ignoreNote) &&
+				if(strumGroup.members[realNum].sustainReduce && daNote.isSustainNote && (daNote.mustPress || !daNote.ignoreNote) &&
 					(!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
 				{
 					if (strumScroll)
@@ -3509,6 +3603,7 @@ class PlayState extends MusicBeatState
 		setOnLuas('cameraX', camFollowPos.x);
 		setOnLuas('cameraY', camFollowPos.y);
 		setOnLuas('botPlay', cpuControlled);
+		setOnLuas('mania', mania);
 		callOnLuas('onUpdatePost', [elapsed]);
 	}
 
@@ -3998,8 +4093,8 @@ class PlayState extends MusicBeatState
 				var newMania:Int = 0;
 
 				newMania = Std.parseInt(value1);
-				if(Math.isNaN(newMania) || newMania < 0 || newMania > 8)
-					newMania = 3;
+				if(Math.isNaN(newMania) || newMania < Note.minMania || newMania > Note.maxMania)
+					newMania = Note.defaultMania;
 
 				changeMania(newMania);
 

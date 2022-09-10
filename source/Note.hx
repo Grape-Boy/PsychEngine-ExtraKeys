@@ -206,7 +206,7 @@ class Note extends FlxSprite
 	public var noAddScore:Bool = false; // note doesn't add score
 	public var noCombo:Bool = false; // doesn't add to combo
 	public var noStrumAnim:Bool = false; // no strum glow
-	public var countNote:Bool = true; // note isn't counted in total notes hit
+	public var countNote:Bool = true; // note isn't counted in total notes hit if false
 	public var noAnimation:Bool = false;
 	public var noMissAnimation:Bool = false;
 	public var hitCausesMiss:Bool = false;
