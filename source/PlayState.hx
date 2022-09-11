@@ -93,25 +93,32 @@ class PlayState extends MusicBeatState
 		['Sick!', 1], //From 90% to 99%
 		['Perfect!!', 1] //The value on this one isn't used actually, since Perfect is always "1"
 	];
+
+	//event variables
+	private var isCameraOnForcedPos:Bool = false;
+
+	#if (haxe >= "4.0.0")
+	public var boyfriendMap:Map<String, Boyfriend> = new Map();
+	public var dadMap:Map<String, Character> = new Map();
+	public var gfMap:Map<String, Character> = new Map();
+	public var variables:Map<String, Dynamic> = new Map();
 	public var modchartTweens:Map<String, FlxTween> = new Map<String, FlxTween>();
 	public var modchartSprites:Map<String, ModchartSprite> = new Map<String, ModchartSprite>();
 	public var modchartTimers:Map<String, FlxTimer> = new Map<String, FlxTimer>();
 	public var modchartSounds:Map<String, FlxSound> = new Map<String, FlxSound>();
 	public var modchartTexts:Map<String, ModchartText> = new Map<String, ModchartText>();
 	public var modchartSaves:Map<String, FlxSave> = new Map<String, FlxSave>();
-
-	//event variables
-	private var isCameraOnForcedPos:Bool = false;
-	#if (haxe >= "4.0.0")
-	public var boyfriendMap:Map<String, Boyfriend> = new Map();
-	public var dadMap:Map<String, Character> = new Map();
-	public var gfMap:Map<String, Character> = new Map();
-	public var variables:Map<String, Dynamic> = new Map();
 	#else
 	public var boyfriendMap:Map<String, Boyfriend> = new Map<String, Boyfriend>();
 	public var dadMap:Map<String, Character> = new Map<String, Character>();
 	public var gfMap:Map<String, Character> = new Map<String, Character>();
 	public var variables:Map<String, Dynamic> = new Map<String, Dynamic>();
+	public var modchartTweens:Map<String, FlxTween> = new Map();
+	public var modchartSprites:Map<String, ModchartSprite> = new Map();
+	public var modchartTimers:Map<String, FlxTimer> = new Map();
+	public var modchartSounds:Map<String, FlxSound> = new Map();
+	public var modchartTexts:Map<String, ModchartText> = new Map();
+	public var modchartSaves:Map<String, FlxSave> = new Map();
 	#end
 
 	public var BF_X:Float = 770;
@@ -341,6 +348,13 @@ class PlayState extends MusicBeatState
 	//private var bullHorseDog:FlxSprite;
 
 	var precacheList:Map<String, String> = new Map<String, String>();
+	
+	// stores the last judgement object
+	public static var lastRating:FlxSprite;
+	// stores the last combo sprite object
+	public static var lastCombo:FlxSprite;
+	// stores the last combo score objects in an array
+	public static var lastScore:Array<FlxSprite> = [];
 
 	override public function create()
 	{
@@ -1740,6 +1754,7 @@ class PlayState extends MusicBeatState
 	public function getLuaObject(tag:String, text:Bool=true):FlxSprite {
 		if(modchartSprites.exists(tag)) return modchartSprites.get(tag);
 		if(text && modchartTexts.exists(tag)) return modchartTexts.get(tag);
+		if(variables.exists(tag)) return variables.get(tag);
 		return null;
 	}
 
@@ -2886,6 +2901,8 @@ class PlayState extends MusicBeatState
 
 	function updateNote(note:Note)
 	{
+		var noteData:Int = note.noteData;
+
 		note.scale.set(1, 1);
 		note.updateHitbox();
 
@@ -2924,7 +2941,7 @@ class PlayState extends MusicBeatState
 			
 			note.offsetX += note.width / 2;
 
-			note.animation.play( Std.string( Note.arrowColors[mania][note.noteData % tMania] + 'holdend') );
+			note.animation.play( Std.string( Note.arrowColors[mania][noteData % tMania] + 'holdend') );
 
 			note.updateHitbox();
 
@@ -2936,7 +2953,7 @@ class PlayState extends MusicBeatState
 			}
 
 			if (note != null && prevNote != null && prevNote.isSustainNote && prevNote.animation != null) { // haxe flixel
-				prevNote.animation.play( Std.string( Note.arrowColors[mania][note.noteData % tMania] + 'hold') );
+				prevNote.animation.play( Std.string( Note.arrowColors[mania][noteData % tMania] + 'hold') );
 
 				prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.05;
 				prevNote.scale.y *= songSpeed;
@@ -2948,12 +2965,23 @@ class PlayState extends MusicBeatState
 
 				prevNote.updateHitbox();
 			}
-		} else if (!note.isSustainNote && note.noteData > - 1 && note.noteData < tMania) {
+		} else if (!note.isSustainNote && noteData > - 1 && noteData < tMania) {
 			var animToPlay:String = '';
 
-			animToPlay = Note.arrowColors[mania][note.noteData % tMania];
+			animToPlay = Note.arrowColors[mania][noteData % tMania];
 
 			note.animation.play(animToPlay + 'Scroll');
+		}
+
+		// Like set_noteType()
+
+		if (!note.changeColSwap) {
+			var hsvNumThing:Int = Note.splashNums[mania][noteData % tMania];
+			var colSwap = note.colorSwap;
+
+			colSwap.hue = ClientPrefs.arrowHSV[hsvNumThing][0] / 360;
+			colSwap.saturation = ClientPrefs.arrowHSV[hsvNumThing][1] / 100;
+			colSwap.brightness = ClientPrefs.arrowHSV[hsvNumThing][2] / 100;
 		}
 	}
 
@@ -4484,6 +4512,12 @@ class PlayState extends MusicBeatState
 		comboSpr.velocity.x += FlxG.random.int(1, 10);
 
 		insert(members.indexOf(strumLineNotes), rating);
+		
+		if (!ClientPrefs.comboStacking)
+		{
+			if (lastRating != null) lastRating.kill();
+			lastRating = rating;
+		}
 
 		if (!PlayState.isPixelStage)
 		{
@@ -4516,6 +4550,19 @@ class PlayState extends MusicBeatState
 		{
 			insert(members.indexOf(strumLineNotes), comboSpr);
 		}
+		if (!ClientPrefs.comboStacking)
+		{
+			if (lastCombo != null) lastCombo.kill();
+			lastCombo = comboSpr;
+		}
+		if (lastScore != null)
+		{
+			while (lastScore.length > 0)
+			{
+				lastScore[0].kill();
+				lastScore.remove(lastScore[0]);
+			}
+		}
 		for (i in seperatedScore)
 		{
 			var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2));
@@ -4526,6 +4573,9 @@ class PlayState extends MusicBeatState
 
 			numScore.x += ClientPrefs.comboOffset[2];
 			numScore.y -= ClientPrefs.comboOffset[3];
+			
+			if (!ClientPrefs.comboStacking)
+				lastScore.push(numScore);
 
 			if (!PlayState.isPixelStage)
 			{
@@ -5070,6 +5120,10 @@ class PlayState extends MusicBeatState
 		var splash:NoteSplash = grpNoteSplashes.recycle(NoteSplash);
 		splash.setupNoteSplash(x, y, data, skin, hue, sat, brt, mania);
 		grpNoteSplashes.add(splash);
+
+		splash.scale.set(1, 1);
+		splash.setGraphicSize(Std.int(splash.width * (Note.noteScales[mania] + 0.3) ));
+		splash.updateHitbox();
 	}
 
 	var fastCarCanDrive:Bool = true;

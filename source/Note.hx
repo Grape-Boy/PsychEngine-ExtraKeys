@@ -146,6 +146,7 @@ class Note extends FlxSprite
 
 	public var colorSwap:ColorSwap;
 	public var inEditor:Bool = false;
+	public var changeColSwap:Bool = true;
 
 	public var animSuffix:String = '';
 	public var gfNote:Bool = false;
@@ -258,6 +259,7 @@ class Note extends FlxSprite
 					colorSwap.hue = 0;
 					colorSwap.saturation = 0;
 					colorSwap.brightness = 0;
+					changeColSwap = false;
 					lowPriority = true;
 
 					if(isSustainNote) {
@@ -281,6 +283,7 @@ class Note extends FlxSprite
 					colorSwap.hue = 0;
 					colorSwap.saturation = 0;
 					colorSwap.brightness = 0;
+					changeColSwap = false;
 
 					lowPriority = true;
 					missHealth = Math.POSITIVE_INFINITY;
@@ -291,6 +294,7 @@ class Note extends FlxSprite
 					colorSwap.hue = 0;
 					colorSwap.saturation = 0;
 					colorSwap.brightness = 0;
+					changeColSwap = false;
 
 					missHealth = Math.POSITIVE_INFINITY;
 			}

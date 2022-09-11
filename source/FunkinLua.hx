@@ -2741,7 +2741,7 @@ class FunkinLua {
 		#end
 	}
 
-	public function isOfTypes(value:Any, types:Array<Dynamic>)
+	public static function isOfTypes(value:Any, types:Array<Dynamic>)
 	{
 		for (type in types)
 		{
@@ -2766,7 +2766,16 @@ class FunkinLua {
 		var shit:Array<String> = variable.split('[');
 		if(shit.length > 1)
 		{
-			var blah:Dynamic = Reflect.getProperty(instance, shit[0]);
+			var blah:Dynamic = null;
+			if(PlayState.instance.variables.exists(shit[0]))
+			{
+				var retVal:Dynamic = PlayState.instance.variables.get(shit[0]);
+				if(retVal != null)
+					blah = retVal;
+			}
+			else
+				blah = Reflect.getProperty(instance, shit[0]);
+
 			for (i in 1...shit.length)
 			{
 				var leNum:Dynamic = shit[i].substr(0, shit[i].length - 1);
@@ -2780,6 +2789,12 @@ class FunkinLua {
 		/*if(Std.isOfType(instance, Map))
 			instance.set(variable,value);
 		else*/
+			
+		if(PlayState.instance.variables.exists(variable))
+		{
+			PlayState.instance.variables.set(variable, value);
+			return true;
+		}
 
 		Reflect.setProperty(instance, variable, value);
 		return true;
@@ -2789,13 +2804,29 @@ class FunkinLua {
 		var shit:Array<String> = variable.split('[');
 		if(shit.length > 1)
 		{
-			var blah:Dynamic = Reflect.getProperty(instance, shit[0]);
+			var blah:Dynamic = null;
+			if(PlayState.instance.variables.exists(shit[0]))
+			{
+				var retVal:Dynamic = PlayState.instance.variables.get(shit[0]);
+				if(retVal != null)
+					blah = retVal;
+			}
+			else
+				blah = Reflect.getProperty(instance, shit[0]);
+
 			for (i in 1...shit.length)
 			{
 				var leNum:Dynamic = shit[i].substr(0, shit[i].length - 1);
 				blah = blah[leNum];
 			}
 			return blah;
+		}
+
+		if(PlayState.instance.variables.exists(variable))
+		{
+			var retVal:Dynamic = PlayState.instance.variables.get(variable);
+			if(retVal != null)
+				return retVal;
 		}
 
 		return Reflect.getProperty(instance, variable);
@@ -3365,6 +3396,15 @@ class HScript
 			var result:Dynamic = null;
 			if(PlayState.instance.variables.exists(name)) result = PlayState.instance.variables.get(name);
 			return result;
+		});
+		interp.variables.set('removeVar', function(name:String)
+		{
+			if(PlayState.instance.variables.exists(name))
+			{
+				PlayState.instance.variables.remove(name);
+				return true;
+			}
+			return false;
 		});
 	}
 
