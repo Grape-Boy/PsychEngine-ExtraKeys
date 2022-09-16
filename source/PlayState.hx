@@ -3001,7 +3001,7 @@ class PlayState extends MusicBeatState
 				oldStrum.alpha = playerStrums.members[i].alpha;
 				oldStrum.scrollFactor.set();
 				oldStrum.cameras = [camHUD];
-				oldStrum.setGraphicSize(Std.int(oldStrum.width * Note.noteScales[mania]));
+				oldStrum.setGraphicSize(Std.int(oldStrum.width * (isPixelStage ? daPixelZoom : 1) * Note.noteScales[mania]));
 				oldStrum.updateHitbox();
 				add(oldStrum);
 				
@@ -3017,7 +3017,7 @@ class PlayState extends MusicBeatState
 				oldStrum.alpha = opponentStrums.members[i].alpha;
 				oldStrum.scrollFactor.set();
 				oldStrum.cameras = [camHUD];
-				oldStrum.setGraphicSize(Std.int(oldStrum.width * Note.noteScales[mania]));
+				oldStrum.setGraphicSize(Std.int(oldStrum.width * (isPixelStage ? daPixelZoom : 1) * Note.noteScales[mania]));
 				oldStrum.updateHitbox();
 				add(oldStrum);
 				
