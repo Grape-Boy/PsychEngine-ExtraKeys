@@ -129,6 +129,10 @@ class Note extends FlxSprite
 	public var prevNote:Note;
 	public var nextNote:Note;
 
+	public var usesPixelAssets:Bool = true; // only in pixel stages
+	public var usesPixelCalcs:Bool = true; // same thing
+	public var pixelZoom:Float = 6;
+
 	public var spawned:Bool = false;
 
 	public var tail:Array<Note> = []; // for sustains
@@ -153,6 +157,7 @@ class Note extends FlxSprite
 	public var earlyHitMult:Float = 0.5;
 	public var lateHitMult:Float = 1;
 	public var lowPriority:Bool = false;
+	public var changeAnim:Bool = true;
 
 	public static var swagWidth:Array<Int> = [
 		Std.int(160 * 0.775), 	// 1
@@ -285,6 +290,8 @@ class Note extends FlxSprite
 					colorSwap.brightness = 0;
 					changeColSwap = false;
 
+					changeAnim = false;
+
 					lowPriority = true;
 					missHealth = Math.POSITIVE_INFINITY;
 					hitCausesMiss = true;
@@ -295,6 +302,8 @@ class Note extends FlxSprite
 					colorSwap.saturation = 0;
 					colorSwap.brightness = 0;
 					changeColSwap = false;
+
+					changeAnim = false;
 
 					missHealth = Math.POSITIVE_INFINITY;
 			}

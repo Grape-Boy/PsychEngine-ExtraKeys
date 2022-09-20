@@ -2966,11 +2966,13 @@ class PlayState extends MusicBeatState
 				prevNote.updateHitbox();
 			}
 		} else if (!note.isSustainNote && noteData > - 1 && noteData < tMania) {
-			var animToPlay:String = '';
+			if (note.changeAnim) {
+				var animToPlay:String = '';
 
-			animToPlay = Note.arrowColors[mania][noteData % tMania];
-
-			note.animation.play(animToPlay + 'Scroll');
+				animToPlay = Note.arrowColors[mania][noteData % tMania];
+				
+				note.animation.play(animToPlay + 'Scroll');
+			}
 		}
 
 		// Like set_noteType()
@@ -4121,7 +4123,7 @@ class PlayState extends MusicBeatState
 				var newMania:Int = 0;
 
 				newMania = Std.parseInt(value1);
-				if(Math.isNaN(newMania) || newMania < Note.minMania || newMania > Note.maxMania)
+				if(value1 == "" || Math.isNaN(newMania) || newMania < Note.minMania || newMania > Note.maxMania) // check if empty too because uhhhhhh
 					newMania = Note.defaultMania;
 
 				changeMania(newMania);
