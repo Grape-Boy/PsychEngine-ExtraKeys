@@ -170,7 +170,7 @@ class Note extends FlxSprite
 		Std.int(160 * 0.48), 	// 8
 		Std.int(160 * 0.43) 	// 9
 	]; // "why weird factors?" because the notes are too far apart if I don't // this is actually kinda cringe tbh
-
+	/*
 	public static var PURP_NOTE:Int = 0;
 	public static var BLUE_NOTE:Int = 1;
 	public static var GREEN_NOTE:Int = 2;
@@ -182,7 +182,7 @@ class Note extends FlxSprite
 	public static var VIOLET_NOTE:Int = 6;
 	public static var BLACK_NOTE:Int = 7;
 	public static var DARK_NOTE:Int = 8;
-
+	*/
 	// Lua shit
 	public var noteSplashDisabled:Bool = false;
 	public var noteSplashTexture:String = null;
@@ -343,7 +343,7 @@ class Note extends FlxSprite
 
 			x += swagWidth[mania] * (noteData % tMania);
 			
-			if(!isSustainNote && noteData > -1 && noteData < tMania) { //Doing this 'if' check to fix the warnings on Senpai songs
+			if(!isSustainNote && noteData > -1 /*&& noteData < tMania*/) { //Doing this 'if' check to fix the warnings on Senpai songs
 				var animToPlay:String = '';
 
 				animToPlay = arrowColors[mania][noteData % tMania];
@@ -404,7 +404,7 @@ class Note extends FlxSprite
 		x += offsetX;
 	}
 
-	var lastNoteOffsetXForPixelAutoAdjusting:Float = 0;
+	public var lastNoteOffsetXForPixelAutoAdjusting:Float = 0;
 	var lastNoteScaleToo:Float = 1;
 	public var originalHeightForCalcs:Float = 6;
 	function reloadNote(?prefix:String = '', ?texture:String = '', ?suffix:String = '') {
