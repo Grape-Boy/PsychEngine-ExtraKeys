@@ -21,100 +21,6 @@ class Note extends FlxSprite
 {
 	public var extraData:Map<String,Dynamic> = [];
 
-	public static var minMania:Int = 0;
-	public static var maxMania:Int = 8;
-	public static var defaultMania:Int = 3;
-	//											   1      2     3     4     5    6     7    8     9
-	public static var noteScales:Array<Float> = [0.775, 0.75, 0.725, 0.7, 0.65, 0.6, 0.55, 0.5, 0.45]; // yeah
-
-	public static var arrowColors:Array<Array<String>> = [ // yeah that's more efficient I think
-
-		[ "white" ], // 1K
-
-		[ "purple", "red" ], // 2K
-
-		[ "purple", "white", "red" ], // 3K
-
-		[ "purple", "blue", "green", "red" ], // 4K
-
-		[ "purple", "blue", "white", "green", "red" ], // 5K
-
-		[ "purple", "green", "red", "yellow", "blue", "dark" ], // 6K
-
-		[ "purple", "green", "red", "white", "yellow", "blue", "dark" ], // 7K
-
-		[ "purple", "blue", "green", "red", "yellow", "violet", "black", "dark" ], // 8K
-
-		[ "purple", "blue", "green", "red", "white", "yellow", "violet", "black", "dark" ] // 9K
-
-	];
-
-	public static var arrowDirColors:Array<Array<String>> = [ // same thing but for the xml names
-
-		[ "white" ], // 1K
-
-		[ "left", "right" ], // 2K
-
-		[ "left", "white", "right" ], // 3K
-
-		[ "left", "down", "up", "right" ], // 4K
-
-		[ "left", "down", "white", "up", "right" ], // 5K
-
-		[ "left", "up", "right", "yellow", "down", "dark" ], // 6K
-
-		[ "left", "up", "right", "white", "yellow", "down", "dark" ], // 7K
-
-		[ "left", "down", "up", "right", "yellow", "violet", "black", "dark" ], // 8K
-
-		[ "left", "down", "up", "right", "white", "yellow", "violet", "black", "dark" ] // 9K
-
-	];
-
-	public static var strumDirs:Array<Array<String>> = [
-
-		[ "arrowSPACE" ],
-
-		[ "arrowLEFT", "arrowRIGHT" ],
-
-		[ "arrowLEFT", "arrowSPACE", "arrowRIGHT" ],
-
-		[ "arrowLEFT", "arrowDOWN", "arrowUP", "arrowRIGHT" ],
-
-		[ "arrowLEFT", "arrowDOWN", "arrowSPACE", "arrowUP", "arrowRIGHT" ],
-
-		[ "arrowLEFT", "arrowUP", "arrowRIGHT", "arrowLEFT", "arrowDOWN", "arrowRIGHT" ],
-
-		[ "arrowLEFT", "arrowUP", "arrowRIGHT", "arrowSPACE", "arrowLEFT", "arrowDOWN", "arrowRIGHT" ],
-
-		[ "arrowLEFT", "arrowDOWN", "arrowUP", "arrowRIGHT", "arrowLEFT", "arrowDOWN", "arrowUP", "arrowRIGHT" ],
-
-		[ "arrowLEFT", "arrowDOWN", "arrowUP", "arrowRIGHT", "arrowSPACE", "arrowLEFT", "arrowDOWN", "arrowUP", "arrowRIGHT" ]
-
-	];
-
-	public static var splashNums:Array<Array<Int>> = [
-
-		[4], // 1K
-
-		[0, 3], // 2K
-
-		[0, 4, 3], // 3K
-
-		[0, 1, 2, 3], // 4K
-
-		[0, 1, 4, 2, 3], // 5K
-
-		[0, 2, 3, 5, 1, 8], // 6K
-
-		[0, 2, 3, 4, 5, 1, 8], // 7K
-
-		[0, 1, 2, 3, 5, 6, 7, 8], // 8K
-
-		[0, 1, 2, 3, 4, 5, 6, 7, 8] // 9K
-
-	];
-
 	public var strumTime:Float = 0;
 	public var mustPress:Bool = false;
 	public var noteData:Int = 0;
@@ -158,18 +64,6 @@ class Note extends FlxSprite
 	public var lateHitMult:Float = 1;
 	public var lowPriority:Bool = false;
 	public var changeAnim:Bool = true;
-
-	public static var swagWidth:Array<Int> = [
-		Std.int(160 * 0.775), 	// 1
-		Std.int(160 * 0.73), 	// 2
-		Std.int(160 * 0.725), 	// 3
-		Std.int(160 * 0.7), 	// 4
-		Std.int(160 * 0.65), 	// 5
-		Std.int(160 * 0.58), 	// 6
-		Std.int(160 * 0.53), 	// 7
-		Std.int(160 * 0.48), 	// 8
-		Std.int(160 * 0.43) 	// 9
-	]; // "why weird factors?" because the notes are too far apart if I don't // this is actually kinda cringe tbh
 	/*
 	public static var PURP_NOTE:Int = 0;
 	public static var BLUE_NOTE:Int = 1;
@@ -248,7 +142,7 @@ class Note extends FlxSprite
 		noteSplashTexture = PlayState.SONG.splashSkin;
 		if (noteData > -1 && noteData < ClientPrefs.arrowHSV.length)
 		{
-			var hsvNumThing:Int = Note.splashNums[mania][noteData % tMania];
+			var hsvNumThing:Int = NoteInfo.splashNums[mania][noteData % tMania];
 
 			colorSwap.hue = ClientPrefs.arrowHSV[hsvNumThing][0] / 360;
 			colorSwap.saturation = ClientPrefs.arrowHSV[hsvNumThing][1] / 100;
@@ -341,12 +235,12 @@ class Note extends FlxSprite
 			colorSwap = new ColorSwap();
 			shader = colorSwap.shader;
 
-			x += swagWidth[mania] * (noteData % tMania);
+			x += NoteInfo.swagWidth[mania] * (noteData % tMania);
 			
 			if(!isSustainNote && noteData > -1 /*&& noteData < tMania*/) { //Doing this 'if' check to fix the warnings on Senpai songs
 				var animToPlay:String = '';
 
-				animToPlay = arrowColors[mania][noteData % tMania];
+				animToPlay = NoteInfo.arrowColors[mania][noteData % tMania];
 
 				animation.play(animToPlay + 'Scroll');
 			}
@@ -367,7 +261,7 @@ class Note extends FlxSprite
 			offsetX += width / 2;
 			copyAngle = false;
 
-			animation.play(Std.string(arrowColors[mania][noteData % tMania] + 'holdend'));
+			animation.play(Std.string(NoteInfo.arrowColors[mania][noteData % tMania] + 'holdend'));
 
 			updateHitbox();
 
@@ -378,7 +272,7 @@ class Note extends FlxSprite
 
 			if (prevNote.isSustainNote)
 			{
-				prevNote.animation.play(Std.string(arrowColors[mania][prevNote.noteData % tMania] + 'hold'));
+				prevNote.animation.play(Std.string(NoteInfo.arrowColors[mania][prevNote.noteData % tMania] + 'hold'));
 				
 				prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.05;
 				if(PlayState.instance != null)
@@ -395,7 +289,7 @@ class Note extends FlxSprite
 			}
 
 			if(PlayState.isPixelStage) {
-				scale.y *= PlayState.daPixelZoom * (Note.noteScales[mania] + 0.3);
+				scale.y *= PlayState.daPixelZoom * (NoteInfo.noteScales[mania] + 0.3);
 				updateHitbox();
 			}
 		} else if(!isSustainNote) {
@@ -443,7 +337,7 @@ class Note extends FlxSprite
 				height = height / 5;
 				loadGraphic(Paths.image('pixelUI/' + blahblah), true, Math.floor(width), Math.floor(height));
 			}
-			setGraphicSize(Std.int(width * PlayState.daPixelZoom * (Note.noteScales[mania] + 0.3)));
+			setGraphicSize(Std.int(width * PlayState.daPixelZoom * (NoteInfo.noteScales[mania] + 0.3)));
 			loadPixelNoteAnims();
 			antialiasing = false;
 
@@ -480,7 +374,7 @@ class Note extends FlxSprite
 
 	function loadNoteAnims() {
 
-		for (i in 0...9) animation.addByPrefix(arrowColors[8][i] + 'Scroll', arrowColors[8][i] + '0');
+		for (i in 0...9) animation.addByPrefix(NoteInfo.arrowColors[8][i] + 'Scroll', NoteInfo.arrowColors[8][i] + '0');
 
 		animation.addByPrefix('deathNote', 'kill0');
 		animation.addByPrefix('dodgeNote', 'live0');
@@ -489,14 +383,14 @@ class Note extends FlxSprite
 		{
 			// Hold Ends
 
-			for (i in 0...9) animation.addByPrefix(arrowColors[8][i] + 'holdend', arrowColors[8][i] + ' hold end');
+			for (i in 0...9) animation.addByPrefix(NoteInfo.arrowColors[8][i] + 'holdend', NoteInfo.arrowColors[8][i] + ' hold end');
 
 			// Hold Pieces
 
-			for (i in 0...9) animation.addByPrefix(arrowColors[8][i] + 'hold', arrowColors[8][i] + ' hold piece');
+			for (i in 0...9) animation.addByPrefix(NoteInfo.arrowColors[8][i] + 'hold', NoteInfo.arrowColors[8][i] + ' hold piece');
 		}
 
-		setGraphicSize(Std.int(width * Note.noteScales[mania]));
+		setGraphicSize(Std.int(width * NoteInfo.noteScales[mania]));
 		updateHitbox();
 	}
 
@@ -504,15 +398,15 @@ class Note extends FlxSprite
 		if(isSustainNote) {
 			// Hold Ends
 
-			for (i in 0...9) animation.add(arrowColors[8][i] + 'holdend', [splashNums[8][i] + 9]);
+			for (i in 0...9) animation.add(NoteInfo.arrowColors[8][i] + 'holdend', [NoteInfo.splashNums[8][i] + 9]);
 
 			// Hold Pieces
 
-			for (i in 0...9) animation.add(arrowColors[8][i] + 'hold', [splashNums[8][i]]);
+			for (i in 0...9) animation.add(NoteInfo.arrowColors[8][i] + 'hold', [NoteInfo.splashNums[8][i]]);
 
 		} else {
 
-			for (i in 0...9) animation.add(arrowColors[8][i] + 'Scroll', [splashNums[8][i] + 9]);
+			for (i in 0...9) animation.add(NoteInfo.arrowColors[8][i] + 'Scroll', [NoteInfo.splashNums[8][i] + 9]);
 		}
 	}
 

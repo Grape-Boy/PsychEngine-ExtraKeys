@@ -52,7 +52,7 @@ class StrumNote extends FlxSprite
 	}
 
 	private function addAnimPIXEL(noteData:Int) {
-		var numForAnim:Int = Note.splashNums[mania][noteData % tMania];
+		var numForAnim:Int = NoteInfo.splashNums[mania][noteData % tMania];
 
 		animation.add('static', [numForAnim]);
 		animation.add('pressed', [9 + numForAnim, 18 + numForAnim], 12, false);
@@ -72,9 +72,9 @@ class StrumNote extends FlxSprite
 			loadGraphic(Paths.image('pixelUI/' + texture), true, Math.floor(width), Math.floor(height));
 
 			antialiasing = false;
-			setGraphicSize(Std.int(width * PlayState.daPixelZoom * (Note.noteScales[mania] + 0.3)));
+			setGraphicSize(Std.int(width * PlayState.daPixelZoom * (NoteInfo.noteScales[mania] + 0.3)));
 
-			for (i in 0...9) animation.add(Note.arrowColors[8][i], [Note.splashNums[8][i] + 9]);
+			for (i in 0...9) animation.add(NoteInfo.arrowColors[8][i], [NoteInfo.splashNums[8][i] + 9]);
 
 			addAnimPIXEL(Std.int( Math.abs(noteData) % tMania ));
 			//setGraphicSize(Std.int(width * Note.noteScales[mania]));
@@ -84,13 +84,13 @@ class StrumNote extends FlxSprite
 		{
 			frames = Paths.getSparrowAtlas(texture);
 
-			for (i in 0...9) animation.addByPrefix(Note.arrowColors[8][i], Note.strumDirs[8][i]);
+			for (i in 0...9) animation.addByPrefix(NoteInfo.arrowColors[8][i], NoteInfo.strumDirs[8][i]);
 
 			antialiasing = ClientPrefs.globalAntialiasing;
-			setGraphicSize(Std.int(width * Note.noteScales[mania]));
+			setGraphicSize(Std.int(width * NoteInfo.noteScales[mania]));
 			updateHitbox();
 
-			addAnim(Note.strumDirs[mania][Std.int(Math.abs(noteData))], Note.arrowDirColors[mania][Std.int(Math.abs(noteData))]);
+			addAnim(NoteInfo.strumDirs[mania][Std.int(Math.abs(noteData))], NoteInfo.arrowDirColors[mania][Std.int(Math.abs(noteData))]);
 		}
 		updateHitbox();
 
@@ -102,7 +102,7 @@ class StrumNote extends FlxSprite
 
 	public function postAddedToGroup() {
 		playAnim('static');
-		x += Note.swagWidth[mania] * noteData;
+		x += NoteInfo.swagWidth[mania] * noteData;
 		x += 50;
 		x += ((FlxG.width / 2) * player);
 		ID = noteData;
@@ -136,7 +136,7 @@ class StrumNote extends FlxSprite
 		} else {
 			if (noteData > -1 && noteData < ClientPrefs.arrowHSV.length)
 			{
-				var hsvNumThing:Int = Note.splashNums[mania][noteData % tMania];
+				var hsvNumThing:Int = NoteInfo.splashNums[mania][noteData % tMania];
 
 				colorSwap.hue = ClientPrefs.arrowHSV[hsvNumThing][0] / 360;
 				colorSwap.saturation = ClientPrefs.arrowHSV[hsvNumThing][1] / 100;

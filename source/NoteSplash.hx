@@ -26,10 +26,10 @@ class NoteSplash extends FlxSprite
 	}
 
 	public function setupNoteSplash(x:Float, y:Float, note:Int = 0, texture:String = null, hueColor:Float = 0, satColor:Float = 0, brtColor:Float = 0, mania:Int = 3) {
-		setGraphicSize(Std.int(width * (Note.noteScales[mania] + 0.3)));
+		setGraphicSize(Std.int(width * (NoteInfo.noteScales[mania] + 0.3)));
 		centerOrigin();
 		updateHitbox();
-		setPosition(x - Note.swagWidth[mania] * 0.95, y - Note.swagWidth[mania]);
+		setPosition(x - NoteInfo.swagWidth[mania] * 0.95, y - NoteInfo.swagWidth[mania]);
 		alpha = 0.6;
 
 		if(texture == null) {
@@ -46,7 +46,7 @@ class NoteSplash extends FlxSprite
 		offset.set(10, 10);
 
 		var animNum:Int = FlxG.random.int(1, 2);
-		animation.play('note' + Note.splashNums[mania][note] + '-' + animNum, true);
+		animation.play('note' + NoteInfo.splashNums[mania][note] + '-' + animNum, true);
 		if(animation.curAnim != null)animation.curAnim.frameRate = 24 + FlxG.random.int(-2, 2);
 	}
 
@@ -65,7 +65,7 @@ class NoteSplash extends FlxSprite
 			animation.addByPrefix("note7-" + i, "note splash black " + i, 24, false);
 			animation.addByPrefix("note8-" + i, "note splash dark " + i, 24, false);*/
 
-			for (j in 0...9) animation.addByPrefix("note" + j + "-" + i, "note splash " + Note.arrowColors[8][j] + " " + i, 24, false);
+			for (j in 0...9) animation.addByPrefix("note" + j + "-" + i, "note splash " + NoteInfo.arrowColors[8][j] + " " + i, 24, false);
 		}
 	}
 

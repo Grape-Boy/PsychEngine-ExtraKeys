@@ -76,8 +76,8 @@ class EditorPlayState extends MusicBeatState
 		bg.color = FlxColor.fromHSB(FlxG.random.int(0, 359), FlxG.random.float(0, 0.8), FlxG.random.float(0.3, 1));
 		add(bg);
 
-		if (mania == null || mania < Note.minMania || mania > Note.maxMania) // Checks for a valid mania value
-			mania = Note.defaultMania;
+		if (mania == null || mania < NoteInfo.minMania || mania > NoteInfo.maxMania) // Checks for a valid mania value
+			mania = NoteInfo.defaultMania;
 
 		tMania = mania + 1;
 
@@ -548,7 +548,7 @@ class EditorPlayState extends MusicBeatState
 
 				strumX += daNote.offsetX;
 				strumY += daNote.offsetY;
-				var center:Float = strumY + Note.swagWidth[mania] / 2;
+				var center:Float = strumY + NoteInfo.swagWidth[mania] / 2;
 
 				if(daNote.copyAlpha) {
 					daNote.alpha = strumAlpha * daNote.multAlpha;
@@ -570,7 +570,7 @@ class EditorPlayState extends MusicBeatState
 									daNote.y -= 19;
 								}
 							} 
-							daNote.y += (Note.swagWidth[mania] / 2) - (60.5 * (PlayState.SONG.speed - 1));
+							daNote.y += (NoteInfo.swagWidth[mania] / 2) - (60.5 * (PlayState.SONG.speed - 1));
 							daNote.y += 27.5 * ((PlayState.SONG.bpm / 100) - 1) * (PlayState.SONG.speed - 1);
 
 							if(daNote.mustPress || !daNote.ignoreNote)
@@ -1192,7 +1192,7 @@ class EditorPlayState extends MusicBeatState
 		var brt:Float = 0;
 		if (data > -1 && data < ClientPrefs.arrowHSV.length)
 		{
-			var poopPiss:Int = Note.splashNums[mania][data % tMania];
+			var poopPiss:Int = NoteInfo.splashNums[mania][data % tMania];
 
 			hue = ClientPrefs.arrowHSV[poopPiss][0] / 360;
 			sat = ClientPrefs.arrowHSV[poopPiss][1] / 100;

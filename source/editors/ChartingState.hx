@@ -227,7 +227,7 @@ class ChartingState extends MusicBeatState
 				player2: 'dad',
 				gfVersion: 'gf',
 				speed: 1,
-				mania: Note.defaultMania,
+				mania: NoteInfo.defaultMania,
 				stage: 'stage',
 				validScore: false
 			};
@@ -235,8 +235,8 @@ class ChartingState extends MusicBeatState
 			PlayState.SONG = _song;
 		}
 
-		if (_song.mania == null || _song.mania < Note.minMania || _song.mania > Note.maxMania)
-			_song.mania = Note.defaultMania;
+		if (_song.mania == null || _song.mania < NoteInfo.minMania || _song.mania > NoteInfo.maxMania)
+			_song.mania = NoteInfo.defaultMania;
 		
 		mania = _song.mania;
 		tMania = mania + 1;
@@ -509,7 +509,7 @@ class ChartingState extends MusicBeatState
 		stepperSpeed.name = 'song_speed';
 		blockPressWhileTypingOnStepper.push(stepperSpeed);
 
-		var stepperMania:FlxUINumericStepper = new FlxUINumericStepper(saveButton.x, stepperSpeed.y, 1, mania, Note.minMania, Note.maxMania, 0);
+		var stepperMania:FlxUINumericStepper = new FlxUINumericStepper(saveButton.x, stepperSpeed.y, 1, mania, NoteInfo.minMania, NoteInfo.maxMania, 0);
 		stepperMania.value = _song.mania;
 		stepperMania.name = 'song_mania';
 		blockPressWhileTypingOnStepper.push(stepperMania);

@@ -372,8 +372,8 @@ class PlayState extends MusicBeatState
 
 		mania = SONG.mania;
 
-		if (mania == null || mania < Note.minMania || mania > Note.maxMania) // Checks for a valid mania value
-			mania = Note.defaultMania;
+		if (mania == null || mania < NoteInfo.minMania || mania > NoteInfo.maxMania) // Checks for a valid mania value
+			mania = NoteInfo.defaultMania;
 
 		tMania = mania + 1;
 
@@ -2267,6 +2267,17 @@ class PlayState extends MusicBeatState
 		Paths.sound('introGo' + introSoundsSuffix);
 	}
 
+	function updateDefaultStrumPos(player:Int = 1) { // not my fault if a modchart fucks this up
+		var strums = (player == 1 ? playerStrums : opponentStrums);
+		var stringName = (player == 1 ? "Player" : "Opponent");
+		trace(stringName);
+
+		for (i in 0...strums.length) {
+			setOnLuas("default" + stringName + "StrumX" + i, strums.members[i].x);
+			setOnLuas("default" + stringName + "StrumY" + i, strums.members[i].y);
+		}
+	}
+
 	public function startCountdown():Void
 	{
 		if(startedCountdown) {
@@ -2281,6 +2292,9 @@ class PlayState extends MusicBeatState
 
 			generateStaticArrows(0);
 			generateStaticArrows(1);
+			updateDefaultStrumPos(0);
+			updateDefaultStrumPos(1);
+			/*
 			for (i in 0...playerStrums.length) {
 				setOnLuas('defaultPlayerStrumX' + i, playerStrums.members[i].x);
 				setOnLuas('defaultPlayerStrumY' + i, playerStrums.members[i].y);
@@ -2290,6 +2304,7 @@ class PlayState extends MusicBeatState
 				setOnLuas('defaultOpponentStrumY' + i, opponentStrums.members[i].y);
 				//if(ClientPrefs.middleScroll) opponentStrums.members[i].visible = false;
 			}
+			*/
 
 			startedCountdown = true;
 			Conductor.songPosition = -Conductor.crochet * 5;
@@ -2936,7 +2951,7 @@ class PlayState extends MusicBeatState
 				note.originalHeightForCalcs = note.height;
 			}
 
-			note.setGraphicSize(Std.int(note.width * daPixelZoom * (Note.noteScales[mania] + 0.3)));
+			note.setGraphicSize(Std.int(note.width * daPixelZoom * (NoteInfo.noteScales[mania] + 0.3)));
 			if (note.isSustainNote) {
 				note.offsetX += note.lastNoteOffsetXForPixelAutoAdjusting;
 				note.lastNoteOffsetXForPixelAutoAdjusting = (note.width - 7) * (daPixelZoom / 2);
@@ -2945,7 +2960,7 @@ class PlayState extends MusicBeatState
 		} else {
 			// Like loadNoteAnims()
 
-			note.setGraphicSize(Std.int(note.width * Note.noteScales[mania]));
+			note.setGraphicSize(Std.int(note.width * NoteInfo.noteScales[mania]));
 			note.updateHitbox();
 		}
 
@@ -2958,7 +2973,7 @@ class PlayState extends MusicBeatState
 			if (note.changeAnim) {
 				var animToPlay:String = '';
 
-				animToPlay = Note.arrowColors[mania][noteData % tMania];
+				animToPlay = NoteInfo.arrowColors[mania][noteData % tMania];
 				
 				note.animation.play(animToPlay + 'Scroll');
 			}
@@ -2972,7 +2987,7 @@ class PlayState extends MusicBeatState
 			
 			note.offsetX += note.width / 2;
 
-			note.animation.play( Std.string( Note.arrowColors[mania][noteData % tMania] + 'holdend') );
+			note.animation.play( Std.string( NoteInfo.arrowColors[mania][noteData % tMania] + 'holdend') );
 
 			note.updateHitbox();
 
@@ -2989,7 +3004,7 @@ class PlayState extends MusicBeatState
 			*/
 
 			if (note != null && prevNote != null && prevNote.isSustainNote && prevNote.animation != null) { // haxe flixel
-				prevNote.animation.play( Std.string( Note.arrowColors[mania][noteData % tMania] + 'hold') );
+				prevNote.animation.play( Std.string( NoteInfo.arrowColors[mania][noteData % tMania] + 'hold') );
 
 				prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.05;
 				prevNote.scale.y *= songSpeed;
@@ -3003,7 +3018,7 @@ class PlayState extends MusicBeatState
 			}
 
 			if (isPixelStage) {
-				note.scale.y *= daPixelZoom * (Note.noteScales[mania] + 0.3);
+				note.scale.y *= daPixelZoom * (NoteInfo.noteScales[mania] + 0.3);
 				note.updateHitbox();
 			}
 
@@ -3012,7 +3027,7 @@ class PlayState extends MusicBeatState
 		// Like set_noteType()
 
 		if (!note.changeColSwap) {
-			var hsvNumThing:Int = Note.splashNums[mania][noteData % tMania];
+			var hsvNumThing:Int = NoteInfo.splashNums[mania][noteData % tMania];
 			var colSwap = note.colorSwap;
 
 			colSwap.hue = ClientPrefs.arrowHSV[hsvNumThing][0] / 360;
@@ -3059,7 +3074,7 @@ class PlayState extends MusicBeatState
 				oldStrum.scrollFactor.set();
 				oldStrum.cameras = [camHUD];
 				oldStrum.scale.set(1, 1);
-				oldStrum.setGraphicSize(Std.int(oldStrum.width * (isPixelStage ? daPixelZoom : 1) * Note.noteScales[oldMania]));
+				oldStrum.setGraphicSize(Std.int(oldStrum.width * (isPixelStage ? daPixelZoom : 1) * NoteInfo.noteScales[oldMania]));
 				oldStrum.updateHitbox();
 				add(oldStrum);
 				
@@ -3076,7 +3091,7 @@ class PlayState extends MusicBeatState
 				oldStrum.scrollFactor.set();
 				oldStrum.cameras = [camHUD];
 				oldStrum.scale.set(1, 1);
-				oldStrum.setGraphicSize(Std.int(oldStrum.width * (isPixelStage ? daPixelZoom : 1) * Note.noteScales[oldMania]));
+				oldStrum.setGraphicSize(Std.int(oldStrum.width * (isPixelStage ? daPixelZoom : 1) * NoteInfo.noteScales[oldMania]));
 				oldStrum.updateHitbox();
 				add(oldStrum);
 				
@@ -3092,6 +3107,9 @@ class PlayState extends MusicBeatState
 		
 		generateStaticArrows(0);
 		generateStaticArrows(1);
+
+		updateDefaultStrumPos(0);
+		updateDefaultStrumPos(1);
 	}
 
 	override function openSubState(SubState:FlxSubState)
@@ -3594,7 +3612,7 @@ class PlayState extends MusicBeatState
 									daNote.y -= 19;
 								}
 							}
-							daNote.y += (Note.swagWidth[mania] / 2) - (60.5 * (songSpeed - 1));
+							daNote.y += (NoteInfo.swagWidth[mania] / 2) - (60.5 * (songSpeed - 1));
 							daNote.y += 27.5 * ((SONG.bpm / 100) - 1) * (songSpeed - 1);
 						}
 					}
@@ -3614,7 +3632,7 @@ class PlayState extends MusicBeatState
 						}
 					}
 
-					var center:Float = strumY + Note.swagWidth[mania] / 2;
+					var center:Float = strumY + NoteInfo.swagWidth[mania] / 2;
 					if(strumGroup.members[realNum].sustainReduce && daNote.isSustainNote && (daNote.mustPress || !daNote.ignoreNote) &&
 						(!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
 					{
@@ -4178,8 +4196,8 @@ class PlayState extends MusicBeatState
 				var newMania:Int = 0;
 
 				newMania = Std.parseInt(value1);
-				if(value1 == "" || Math.isNaN(newMania) || newMania < Note.minMania || newMania > Note.maxMania) // check if empty too because uhhhhhh
-					newMania = Note.defaultMania;
+				if(value1 == "" || Math.isNaN(newMania) || newMania < NoteInfo.minMania || newMania > NoteInfo.maxMania) // check if empty too because uhhhhhh
+					newMania = NoteInfo.defaultMania;
 
 				changeMania(newMania);
 
@@ -5162,7 +5180,7 @@ class PlayState extends MusicBeatState
 		var brt:Float = 0;
 		if (data > -1 && data < ClientPrefs.arrowHSV.length)
 		{
-			var poopPiss:Int = Note.splashNums[mania][data % tMania];
+			var poopPiss:Int = NoteInfo.splashNums[mania][data % tMania];
 
 			hue = ClientPrefs.arrowHSV[poopPiss][0] / 360;
 			sat = ClientPrefs.arrowHSV[poopPiss][1] / 100;
@@ -5180,7 +5198,7 @@ class PlayState extends MusicBeatState
 		grpNoteSplashes.add(splash);
 
 		splash.scale.set(1, 1);
-		splash.setGraphicSize(Std.int(splash.width * (Note.noteScales[mania] + 0.3) ));
+		splash.setGraphicSize(Std.int(splash.width * (NoteInfo.noteScales[mania] + 0.3) ));
 		splash.updateHitbox();
 	}
 

@@ -97,6 +97,8 @@ class TitleState extends MusicBeatState
 		// Just to load a mod on start up if ya got one. For mods that change the menu music and bg
 		WeekData.loadTheFirstEnabledMod();
 
+		NoteInfo.callAll();
+
 		//trace(path, FileSystem.exists(path));
 
 		/*#if (polymod && !html5)
