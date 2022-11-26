@@ -1,5 +1,5 @@
 name: Feature Request
-description: If this feature isn't exclusive to Extra Keys, make the request in the original repo. I won't add anything higher than 9K, but other rules from Psych Engine apply, though, like requesting a Stage Editor or Winning Icons.
+description: Only request Extra-Keys-exclusive features. I won't add anything higher than 9K, a Stage Editor, or Winning Icons.
 labels: [enhancement]
 body:
   - type: textarea
