@@ -236,9 +236,7 @@ class FunkinLua {
 
 			var graphic:FlxGraphic = null; // :face_with_rolling_eyes:
 			if(image != null && image.length > 0)
-			{
 				graphic = Paths.image(image);
-			}
 
 			var axes:FlxAxes = switch (repeatAxes.toLowerCase()) {
 				case 'x':
@@ -249,30 +247,28 @@ class FunkinLua {
 					FlxAxes.XY;
 			};
 
-			var leBackdrop:ModchartBackdrop = new ModchartBackdrop(graphic, axes, spacingX, spacingY);
-			PlayState.instance.modchartBackdrops.set(tag, leBackdrop);
+			//var leBackdrop:ModchartBackdrop = new ModchartBackdrop(graphic, axes, spacingX, spacingY);
+			PlayState.instance.modchartBackdrops.set(tag, new ModchartBackdrop(graphic, axes, spacingX, spacingY));
 		});
 
 		Lua_helper.add_callback(lua, "setBackdropVelocity", function(tag:String, x:Float = 0, y:Float = 0) {
-			if(PlayState.instance.modchartBackdrops.exists(tag)) {
-				var dung:ModchartBackdrop = PlayState.instance.modchartBackdrops.get(tag);
-				dung.velocity.set(x, y);
-			}
+			if(PlayState.instance.modchartBackdrops.exists(tag))
+				PlayState.instance.modchartBackdrops.get(tag).velocity.set(x, y);
 		});
 
 		Lua_helper.add_callback(lua, "addBackdrop", function(tag:String, front:Bool = false) {
 			if(PlayState.instance.modchartBackdrops.exists(tag)) {
-				var shit:ModchartBackdrop = PlayState.instance.modchartBackdrops.get(tag);
-				if(!shit.wasAdded) {
+				var backdrop:ModchartBackdrop = PlayState.instance.modchartBackdrops.get(tag);
+				if(!backdrop.wasAdded) {
 					if(front)
 					{
-						getInstance().add(shit);
+						getInstance().add(backdrop);
 					}
 					else
 					{
 						if(PlayState.instance.isDead)
 						{
-							GameOverSubstate.instance.insert(GameOverSubstate.instance.members.indexOf(GameOverSubstate.instance.boyfriend), shit);
+							GameOverSubstate.instance.insert(GameOverSubstate.instance.members.indexOf(GameOverSubstate.instance.boyfriend), backdrop);
 						}
 						else
 						{
@@ -282,31 +278,29 @@ class FunkinLua {
 							} else if(PlayState.instance.members.indexOf(PlayState.instance.dadGroup) < position) {
 								position = PlayState.instance.members.indexOf(PlayState.instance.dadGroup);
 							}
-							PlayState.instance.insert(position, shit);
+							PlayState.instance.insert(position, backdrop);
 						}
 					}
-					shit.wasAdded = true;
+					backdrop.wasAdded = true;
 				}
 			}
 		});
 
 		Lua_helper.add_callback(lua, "removeBackdrop", function(tag:String, destroy:Bool = true) {
-			if(!PlayState.instance.modchartBackdrops.exists(tag)) {
-				return;
-			}
+			if(!PlayState.instance.modchartBackdrops.exists(tag)) return;
 
-			var pee:ModchartBackdrop = PlayState.instance.modchartBackdrops.get(tag);
+			var backdrop:ModchartBackdrop = PlayState.instance.modchartBackdrops.get(tag);
 			if(destroy) {
-				pee.kill();
+				backdrop.kill();
 			}
 
-			if(pee.wasAdded) {
-				getInstance().remove(pee, true);
-				pee.wasAdded = false;
+			if(backdrop.wasAdded) {
+				getInstance().remove(backdrop, true);
+				backdrop.wasAdded = false;
 			}
 
 			if(destroy) {
-				pee.destroy();
+				backdrop.destroy();
 				PlayState.instance.modchartBackdrops.remove(tag);
 			}
 		});
