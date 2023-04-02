@@ -16,6 +16,7 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.FlxSubState;
 import flixel.addons.display.FlxGridOverlay;
+import flixel.addons.display.FlxBackdrop; // idk if this is actually necessary
 import flixel.addons.effects.FlxTrail;
 import flixel.addons.effects.FlxTrailArea;
 import flixel.addons.effects.chainable.FlxEffectSprite;
@@ -109,6 +110,7 @@ class PlayState extends MusicBeatState
 	public var modchartSounds:Map<String, FlxSound> = new Map<String, FlxSound>();
 	public var modchartTexts:Map<String, ModchartText> = new Map<String, ModchartText>();
 	public var modchartSaves:Map<String, FlxSave> = new Map<String, FlxSave>();
+	public var modchartBackdrops:Map<String, ModchartBackdrop> = new Map<String, ModchartBackdrop>();
 	#else
 	public var boyfriendMap:Map<String, Boyfriend> = new Map<String, Boyfriend>();
 	public var dadMap:Map<String, Character> = new Map<String, Character>();
@@ -120,6 +122,7 @@ class PlayState extends MusicBeatState
 	public var modchartSounds:Map<String, FlxSound> = new Map();
 	public var modchartTexts:Map<String, ModchartText> = new Map();
 	public var modchartSaves:Map<String, FlxSave> = new Map();
+	public var modchartBackdrops:Map<String, ModchartBackdrop> = new Map();
 	#end
 
 	public var BF_X:Float = 770;

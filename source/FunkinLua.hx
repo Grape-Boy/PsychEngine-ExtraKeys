@@ -1,5 +1,7 @@
 package;
 
+import flixel.util.FlxAxes;
+import flixel.graphics.FlxGraphic;
 import openfl.display.BitmapData;
 #if LUA_ALLOWED
 import llua.Lua;
@@ -10,6 +12,7 @@ import llua.Convert;
 
 import animateatlas.AtlasFrameMaker;
 import flixel.FlxG;
+import flixel.addons.display.FlxBackdrop;
 import flixel.addons.effects.FlxTrail;
 import flixel.input.keyboard.FlxKey;
 import flixel.tweens.FlxTween;
@@ -225,6 +228,88 @@ class FunkinLua {
 		#else
 		set('buildTarget', 'unknown');
 		#end
+
+		// flxbackdrop babeyyyy
+		Lua_helper.add_callback(lua, "createBackdrop", function(tag:String, image:String, repeatAxes:String, spacingX:Int, spacingY:Int) {
+			tag = tag.replace('.', '');
+			resetBackdropTag(tag);
+
+			var graphic:FlxGraphic = null; // :face_with_rolling_eyes:
+			if(image != null && image.length > 0)
+			{
+				graphic = Paths.image(image);
+			}
+
+			var axes:FlxAxes = switch (repeatAxes.toLowerCase()) {
+				case 'x':
+					FlxAxes.X;
+				case 'y':
+					FlxAxes.Y;
+				case _:
+					FlxAxes.XY;
+			};
+
+			var leBackdrop:ModchartBackdrop = new ModchartBackdrop(graphic, axes, spacingX, spacingY);
+			PlayState.instance.modchartBackdrops.set(tag, leBackdrop);
+		});
+
+		Lua_helper.add_callback(lua, "setBackdropVelocity", function(tag:String, x:Float = 0, y:Float = 0) {
+			if(PlayState.instance.modchartBackdrops.exists(tag)) {
+				var dung:ModchartBackdrop = PlayState.instance.modchartBackdrops.get(tag);
+				dung.velocity.set(x, y);
+			}
+		});
+
+		Lua_helper.add_callback(lua, "addBackdrop", function(tag:String, front:Bool = false) {
+			if(PlayState.instance.modchartBackdrops.exists(tag)) {
+				var shit:ModchartBackdrop = PlayState.instance.modchartBackdrops.get(tag);
+				if(!shit.wasAdded) {
+					if(front)
+					{
+						getInstance().add(shit);
+					}
+					else
+					{
+						if(PlayState.instance.isDead)
+						{
+							GameOverSubstate.instance.insert(GameOverSubstate.instance.members.indexOf(GameOverSubstate.instance.boyfriend), shit);
+						}
+						else
+						{
+							var position:Int = PlayState.instance.members.indexOf(PlayState.instance.gfGroup);
+							if(PlayState.instance.members.indexOf(PlayState.instance.boyfriendGroup) < position) {
+								position = PlayState.instance.members.indexOf(PlayState.instance.boyfriendGroup);
+							} else if(PlayState.instance.members.indexOf(PlayState.instance.dadGroup) < position) {
+								position = PlayState.instance.members.indexOf(PlayState.instance.dadGroup);
+							}
+							PlayState.instance.insert(position, shit);
+						}
+					}
+					shit.wasAdded = true;
+				}
+			}
+		});
+
+		Lua_helper.add_callback(lua, "removeBackdrop", function(tag:String, destroy:Bool = true) {
+			if(!PlayState.instance.modchartBackdrops.exists(tag)) {
+				return;
+			}
+
+			var pee:ModchartBackdrop = PlayState.instance.modchartBackdrops.get(tag);
+			if(destroy) {
+				pee.kill();
+			}
+
+			if(pee.wasAdded) {
+				getInstance().remove(pee, true);
+				pee.wasAdded = false;
+			}
+
+			if(destroy) {
+				pee.destroy();
+				PlayState.instance.modchartBackdrops.remove(tag);
+			}
+		});
 
 		// custom substate
 		Lua_helper.add_callback(lua, "openCustomSubstate", function(name:String, pauseGame:Bool = false) {
@@ -2996,6 +3081,20 @@ class FunkinLua {
 		PlayState.instance.modchartSprites.remove(tag);
 	}
 
+	function resetBackdropTag(tag:String) {
+		if(!PlayState.instance.modchartBackdrops.exists(tag)) {
+			return;
+		}
+
+		var backdrop:ModchartBackdrop = PlayState.instance.modchartBackdrops.get(tag);
+		backdrop.kill();
+		if(backdrop.wasAdded) {
+			PlayState.instance.remove(backdrop, true);
+		}
+		backdrop.destroy();
+		PlayState.instance.modchartBackdrops.remove(tag);
+	}
+
 	function cancelTween(tag:String) {
 		if(PlayState.instance.modchartTweens.exists(tag)) {
 			PlayState.instance.modchartTweens.get(tag).cancel();
@@ -3298,6 +3397,17 @@ class ModchartText extends FlxText
 		cameras = [PlayState.instance.camHUD];
 		scrollFactor.set();
 		borderSize = 2;
+	}
+}
+
+class ModchartBackdrop extends FlxBackdrop
+{
+	public var wasAdded:Bool = false;
+
+	public function new(graphic:FlxGraphic, repeatAxes:FlxAxes, spacingX:Int, spacingY:Int)
+	{
+		super(graphic, repeatAxes, spacingX, spacingY);
+		antialiasing = ClientPrefs.globalAntialiasing;
 	}
 }
 
